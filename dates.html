@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Ideas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .dates-page { min-height:100vh; background:url('bg.gif') center/contain no-repeat; background-color:#1a1a2e; display:flex; flex-direction:column; align-items:center; }
+        .dates-header { text-align:center; padding:10px 20px 20px; }
+        .dates-icon { font-size:4.5rem; display:block; animation:bigBounce 2s ease-in-out infinite; margin-bottom:8px; }
+        .dates-title { font-size:2.6rem; color:white; text-shadow:4px 4px 0 rgba(0,0,0,.5),-2px -2px 0 rgba(0,0,0,.28); letter-spacing:2px; }
+        .dates-sub { font-family:'Nunito',sans-serif; font-size:.95rem; color:rgba(255,255,255,.8); font-weight:700; margin-top:6px; }
+        .dates-section { width:100%; max-width:720px; padding:10px 25px 60px; display:flex; flex-direction:column; gap:20px; }
+
+        /* ── Add box ── */
+        .add-box {
+            background:rgba(255,254,242,.65);
+            backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+            border:5px solid #222; border-radius:30px;
+            box-shadow:8px 8px 0 #222; padding:26px 28px;
+            animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+        .add-box-title { font-family:'Fredoka One',cursive; font-size:1.4rem; color:#333; margin-bottom:16px; }
+
+        .add-row { display:flex; gap:10px; align-items:stretch; }
+
+        .emoji-btn {
+            flex-shrink:0; width:54px; height:54px;
+            border:3px solid #ddd; border-radius:14px;
+            background:rgba(255,255,255,.8); font-size:1.6rem;
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            transition:border .2s; outline:none;
+            position:relative;
+        }
+        .emoji-btn:focus { border-color:#a78bfa; }
+
+        .idea-text-input {
+            flex:1; padding:12px 16px;
+            border:3px solid #ddd; border-radius:14px;
+            font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700; color:#444;
+            background:rgba(255,255,255,.8); outline:none; transition:border .2s;
+        }
+        .idea-text-input:focus { border-color:#f093fb; }
+        .idea-text-input::placeholder { color:#bbb; font-weight:600; }
+
+        .add-idea-btn {
+            flex-shrink:0; padding:0 20px;
+            font-family:'Fredoka One',cursive; font-size:1rem; color:white;
+            background:linear-gradient(135deg,#f093fb,#f5576c);
+            border:3px solid #222; border-radius:14px;
+            cursor:pointer; box-shadow:4px 4px 0 #222;
+            transition:all .2s; white-space:nowrap;
+        }
+        .add-idea-btn:hover { transform:translateY(-2px); box-shadow:5px 6px 0 #222; }
+        .add-idea-btn:active { transform:translateY(2px); box-shadow:2px 2px 0 #222; }
+
+        /* who's adding */
+        .who-row { display:flex; gap:10px; margin-top:12px; }
+        .who-btn {
+            flex:1; padding:9px 6px;
+            font-family:'Fredoka One',cursive; font-size:.9rem;
+            border:3px solid #ddd; border-radius:12px;
+            background:rgba(255,255,255,.6); color:#888;
+            cursor:pointer; transition:all .2s; text-align:center;
+        }
+        .who-btn.active-him { background:#a78bfa; border-color:#7c3aed; color:white; box-shadow:3px 3px 0 #7c3aed; }
+        .who-btn.active-her { background:#f093fb; border-color:#c026d3; color:white; box-shadow:3px 3px 0 #c026d3; }
+
+        /* ── Ideas list ── */
+        .ideas-list-box {
+            background:rgba(255,254,242,.65);
+            backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+            border:5px solid #222; border-radius:30px;
+            box-shadow:8px 8px 0 #222; padding:26px 28px;
+            animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+        .ideas-list-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:14px; border-bottom:3px dashed #ddd; }
+        .ideas-list-title { font-family:'Fredoka One',cursive; font-size:1.4rem; color:#333; }
+        .ideas-count { font-family:'Nunito',sans-serif; font-size:.85rem; font-weight:900; color:#a78bfa; }
+
+        .idea-item {
+            display:flex; align-items:center; gap:12px;
+            padding:13px 6px; border-bottom:2px solid rgba(200,200,200,.3);
+            animation:notePop .3s ease both;
+        }
+        .idea-item:last-child { border-bottom:none; }
+
+        .idea-item-emoji { font-size:1.8rem; flex-shrink:0; }
+
+        .idea-item-body { flex:1; }
+        .idea-item-text {
+            font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700; color:#444;
+            line-height:1.4;
+        }
+        .idea-item-text.done-text { text-decoration:line-through; color:#bbb; }
+        .idea-item-who {
+            font-family:'Nunito',sans-serif; font-size:.75rem; font-weight:900;
+            letter-spacing:1px; text-transform:uppercase; margin-top:3px;
+        }
+        .who-him { color:#a78bfa; }
+        .who-her { color:#f093fb; }
+        .who-both { color:#fb923c; }
+
+        .idea-done-btn {
+            flex-shrink:0; width:30px; height:30px; border-radius:8px;
+            border:3px solid #ccc; background:white; cursor:pointer;
+            font-size:.9rem; display:flex; align-items:center; justify-content:center;
+            transition:all .2s;
+        }
+        .idea-done-btn.done { background:#a78bfa; border-color:#7c3aed; }
+
+        .idea-del-btn {
+            flex-shrink:0; background:transparent; border:none; cursor:pointer;
+            font-size:.9rem; color:#ddd; padding:4px; border-radius:6px;
+            transition:color .2s;
+        }
+        .idea-del-btn:hover { color:#ff4444; }
+
+        .empty-msg {
+            text-align:center; padding:28px 0;
+            font-family:'Nunito',sans-serif; font-size:.95rem; color:#bbb; font-weight:700;
+        }
+
+        /* ── Emoji picker dropdown ── */
+        .emoji-picker {
+            position:absolute; top:60px; left:0;
+            background:white; border:3px solid #ddd; border-radius:16px;
+            padding:10px; display:grid; grid-template-columns:repeat(6,1fr);
+            gap:4px; box-shadow:4px 4px 0 rgba(0,0,0,.15);
+            z-index:100; width:220px;
+        }
+        .ep-opt {
+            font-size:1.4rem; padding:4px; border-radius:8px; cursor:pointer;
+            text-align:center; transition:background .15s;
+        }
+        .ep-opt:hover { background:#f5f5f5; }
+    </style>
+</head>
+<body class="dates-page">
+    <div class="rainbow-bar"></div>
+    <nav class="emotion-nav"><a href="index.html" class="back-btn">← Back</a></nav>
+
+    <div class="dates-header">
+        <span class="dates-icon">🗓️</span>
+        <h1 class="dates-title">Date Ideas</h1>
+        <p class="dates-sub">write down what you both wanna do 💛</p>
+    </div>
+
+    <section class="dates-section">
+
+        <!-- Add box -->
+        <div class="add-box">
+            <div class="add-box-title">add an idea 💛</div>
+
+            <!-- Who's suggesting -->
+            <div class="who-row">
+                <button class="who-btn active-him" id="btnHim" onclick="selectWho('him')">him 💛</button>
+                <button class="who-btn" id="btnHer" onclick="selectWho('her')">her 🤍</button>
+            </div>
+
+            <div class="add-row" style="margin-top:12px;">
+                <div style="position:relative;">
+                    <button class="emoji-btn" id="emojiBtn" onclick="togglePicker()" title="pick an emoji">🌟</button>
+                    <div class="emoji-picker" id="emojiPicker" style="display:none;">
+                        <!-- emojis filled by JS -->
+                    </div>
+                </div>
+                <input type="text" class="idea-text-input" id="ideaInput" placeholder="e.g. rooftop dinner, beach sunset..." maxlength="120" onkeydown="if(event.key==='Enter') addIdea()">
+                <button class="add-idea-btn" onclick="addIdea()">+ add</button>
+            </div>
+        </div>
+
+        <!-- Ideas list -->
+        <div class="ideas-list-box">
+            <div class="ideas-list-top">
+                <span class="ideas-list-title">all our ideas 🌟</span>
+                <span class="ideas-count" id="ideasCount">0 ideas</span>
+            </div>
+            <div id="ideasList"></div>
+        </div>
+
+    </section>
+
+    <script>
+        const EMOJIS = ['💛','🌟','☕','🎬','🍕','🏖️','🎡','🌅','📸','🍣','🎮','🎨','🏕️','🌃','🛍️','🚗','🎵','🍦','🌊','🎭','🍳','💌','🕯️','🌸','✨','🥂','🎠','🪄','🌈','🎪','🍿','🎯'];
+
+        let selectedWho = 'him';
+        let selectedEmoji = '🌟';
+        let pickerOpen = false;
+
+        // Build emoji picker
+        const picker = document.getElementById('emojiPicker');
+        EMOJIS.forEach(e => {
+            const d = document.createElement('div');
+            d.className = 'ep-opt';
+            d.textContent = e;
+            d.onclick = () => { selectedEmoji = e; document.getElementById('emojiBtn').textContent = e; hidePicker(); };
+            picker.appendChild(d);
+        });
+
+        function togglePicker() { pickerOpen ? hidePicker() : showPicker(); }
+        function showPicker() { picker.style.display = 'grid'; pickerOpen = true; }
+        function hidePicker() { picker.style.display = 'none'; pickerOpen = false; }
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#emojiBtn') && !e.target.closest('#emojiPicker')) hidePicker();
+        });
+
+        function selectWho(who) {
+            selectedWho = who;
+            document.getElementById('btnHim').className = 'who-btn' + (who === 'him' ? ' active-him' : '');
+            document.getElementById('btnHer').className = 'who-btn' + (who === 'her' ? ' active-her' : '');
+        }
+
+        function load() { return JSON.parse(localStorage.getItem('dateIdeas2') || '[]'); }
+        function save(d) { localStorage.setItem('dateIdeas2', JSON.stringify(d)); }
+
+        function addIdea() {
+            const text = document.getElementById('ideaInput').value.trim();
+            if (!text) { document.getElementById('ideaInput').focus(); return; }
+            const data = load();
+            data.unshift({ text, emoji: selectedEmoji, who: selectedWho, done: false, id: Date.now() });
+            save(data);
+            document.getElementById('ideaInput').value = '';
+            render();
+        }
+
+        function toggleDone(id) {
+            const data = load();
+            const item = data.find(d => d.id === id);
+            if (item) { item.done = !item.done; save(data); render(); }
+        }
+
+        function deleteIdea(id) {
+            const data = load().filter(d => d.id !== id);
+            save(data);
+            render();
+        }
+
+        function render() {
+            const data = load();
+            const list = document.getElementById('ideasList');
+            const count = document.getElementById('ideasCount');
+
+            count.textContent = data.length === 1 ? '1 idea' : data.length + ' ideas';
+
+            if (data.length === 0) {
+                list.innerHTML = '<div class="empty-msg">no ideas yet — add the first one! 💛</div>';
+                return;
+            }
+
+            const whoLabel = { him: 'his idea 💛', her: 'her idea 🤍', both: 'both 💛🤍' };
+            const whoClass = { him: 'who-him', her: 'who-her', both: 'who-both' };
+
+            list.innerHTML = data.map(d => `
+                <div class="idea-item">
+                    <span class="idea-item-emoji">${d.emoji || '🌟'}</span>
+                    <div class="idea-item-body">
+                        <div class="idea-item-text ${d.done ? 'done-text' : ''}">${d.text}</div>
+                        <div class="idea-item-who ${whoClass[d.who] || 'who-him'}">${whoLabel[d.who] || 'his idea 💛'}</div>
+                    </div>
+                    <button class="idea-done-btn ${d.done ? 'done' : ''}" onclick="toggleDone(${d.id})" title="${d.done ? 'undo' : 'mark done'}">
+                        ${d.done ? '✓' : ''}
+                    </button>
+                    <button class="idea-del-btn" onclick="deleteIdea(${d.id})">✕</button>
+                </div>
+            `).join('');
+        }
+
+        render();
+    </script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotions Log</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&family=Boogaloo&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .log-page {
+            min-height: 100vh;
+            background: url('bg.gif') center center / contain no-repeat;
+            background-color: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .log-header {
+            text-align: center;
+            padding: 10px 20px 20px;
+        }
+
+        .log-big-icon {
+            font-size: 4.5rem;
+            display: block;
+            animation: bigBounce 2s ease-in-out infinite;
+            margin-bottom: 8px;
+        }
+
+        .log-page-title {
+            font-size: 2.6rem;
+            color: white;
+            text-shadow: 4px 4px 0 rgba(0,0,0,0.5), -2px -2px 0 rgba(0,0,0,0.28);
+            letter-spacing: 2px;
+        }
+
+        .log-page-sub {
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.8);
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .log-box-section {
+            width: 100%;
+            max-width: 720px;
+            padding: 40px 25px 50px;
+        }
+
+        .log-box {
+            background: rgba(255, 254, 242, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 5px solid #222;
+            border-radius: 30px;
+            box-shadow: 8px 8px 0px #222;
+            padding: 28px 30px;
+            animation: notePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+
+        .log-box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 3px dashed #ccc;
+        }
+
+        .log-box-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.6rem;
+            color: #333;
+        }
+
+        .total-logs {
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.85rem;
+            color: #888;
+            font-weight: 700;
+            background: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+        /* Emotion rows */
+        .emotion-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 2px solid rgba(200,200,200,0.4);
+        }
+
+        .emotion-row:last-child { border-bottom: none; }
+
+        .row-emoji {
+            font-size: 1.6rem;
+            width: 36px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .row-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            color: #333;
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        .bar-wrap {
+            flex: 1;
+            height: 14px;
+            background: rgba(0,0,0,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(0,0,0,0.12);
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 0%;
+        }
+
+        .row-percent {
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 900;
+            color: #555;
+            width: 36px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .row-count {
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #aaa;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .log-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 3px solid #222;
+            background: white;
+            font-size: 1.3rem;
+            font-family: 'Fredoka One', cursive;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #222;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .log-btn:hover {
+            transform: scale(1.15);
+            box-shadow: 3px 3px 0px #222;
+        }
+
+        .log-btn:active {
+            transform: scale(0.92);
+            box-shadow: 1px 1px 0px #222;
+        }
+
+        .log-btn.popped {
+            animation: btnPop 0.3s ease;
+        }
+
+        @keyframes btnPop {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.35); }
+            100% { transform: scale(1); }
+        }
+
+        /* Emotion bar colors */
+        .bar-happy      { background: linear-gradient(90deg, #FFD700, #FFA500); }
+        .bar-sad        { background: linear-gradient(90deg, #64B5F6, #1E88E5); }
+        .bar-excited    { background: linear-gradient(90deg, #FF69B4, #FF1493); }
+        .bar-angry      { background: linear-gradient(90deg, #FF6B35, #FF0000); }
+        .bar-tense      { background: linear-gradient(90deg, #FF9800, #F44336); }
+        .bar-anxious    { background: linear-gradient(90deg, #81C784, #00C853); }
+        .bar-depressed  { background: linear-gradient(90deg, #CE93D8, #9C27B0); }
+        .bar-calm       { background: linear-gradient(90deg, #80DEEA, #00BCD4); }
+        .bar-loved      { background: linear-gradient(90deg, #F48FB1, #E91E63); }
+        .bar-confused   { background: linear-gradient(90deg, #FFCC80, #FF9800); }
+        .bar-scared     { background: linear-gradient(90deg, #B39DDB, #673AB7); }
+        .bar-grateful   { background: linear-gradient(90deg, #A5D6A7, #4CAF50); }
+        .bar-lonely     { background: linear-gradient(90deg, #90A4AE, #607D8B); }
+        .bar-overwhelmed{ background: linear-gradient(90deg, #EF9A9A, #E53935); }
+        .bar-tired      { background: linear-gradient(90deg, #BCAAA4, #795548); }
+        .bar-bored      { background: linear-gradient(90deg, #CFD8DC, #90A4AE); }
+
+        /* Bottom actions */
+        .log-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 3px dashed #ccc;
+        }
+
+        .reset-btn {
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.95rem;
+            color: #bbb;
+            background: transparent;
+            border: 3px solid #ddd;
+            border-radius: 50px;
+            padding: 7px 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            color: #ff4444;
+            border-color: #ff4444;
+        }
+
+        .last-logged {
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.8rem;
+            color: #bbb;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="log-page">
+
+    <div class="rainbow-bar"></div>
+
+    <nav class="emotion-nav">
+        <a href="index.html" class="back-btn">← Back</a>
+    </nav>
+
+    <div class="log-header">
+        <span class="log-big-icon">📊</span>
+        <h1 class="log-page-title">Emotions Log</h1>
+        <p class="log-page-sub">tap + to log how you feel right now 🤍</p>
+    </div>
+
+    <section class="log-box-section">
+        <div class="log-box">
+            <div class="log-box-header">
+                <span class="log-box-title">How have you been feeling?</span>
+                <span class="total-logs" id="totalLogs">0 logs</span>
+            </div>
+
+            <div id="emotionsList"></div>
+
+            <div class="log-footer">
+                <button class="reset-btn" onclick="resetAll()">reset all ✕</button>
+                <span class="last-logged" id="lastLogged"></span>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const emotions = [
+            { key: 'happy',       emoji: '😊', label: 'Happy'       },
+            { key: 'excited',     emoji: '🤩', label: 'Excited'     },
+            { key: 'loved',       emoji: '🥰', label: 'Loved'       },
+            { key: 'grateful',    emoji: '🙏', label: 'Grateful'    },
+            { key: 'calm',        emoji: '😌', label: 'Calm'        },
+            { key: 'sad',         emoji: '😢', label: 'Sad'         },
+            { key: 'angry',       emoji: '😡', label: 'Angry'       },
+            { key: 'tense',       emoji: '😬', label: 'Tense'       },
+            { key: 'anxious',     emoji: '😰', label: 'Anxious'     },
+            { key: 'depressed',   emoji: '😔', label: 'Depressed'   },
+            { key: 'overwhelmed', emoji: '😤', label: 'Overwhelmed' },
+            { key: 'confused',    emoji: '😕', label: 'Confused'    },
+            { key: 'scared',      emoji: '😨', label: 'Scared'      },
+            { key: 'lonely',      emoji: '😞', label: 'Lonely'      },
+            { key: 'tired',       emoji: '😴', label: 'Tired'       },
+            { key: 'bored',       emoji: '😑', label: 'Bored'       },
+        ];
+
+        function loadData() {
+            return JSON.parse(localStorage.getItem('emotionLog') || '{}');
+        }
+
+        function saveData(data) {
+            localStorage.setItem('emotionLog', JSON.stringify(data));
+        }
+
+        function getTotal(data) {
+            return Object.values(data).reduce((a, b) => a + b, 0);
+        }
+
+        function render() {
+            const data = loadData();
+            const total = getTotal(data);
+            const list = document.getElementById('emotionsList');
+
+            document.getElementById('totalLogs').textContent = total + (total === 1 ? ' log' : ' logs');
+
+            const lastRaw = localStorage.getItem('lastEmotionTime');
+            const lastLabel = localStorage.getItem('lastEmotionLabel');
+            if (lastRaw && lastLabel) {
+                const d = new Date(lastRaw);
+                document.getElementById('lastLogged').textContent =
+                    `last: ${lastLabel} at ${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+            }
+
+            list.innerHTML = emotions.map(e => {
+                const count = data[e.key] || 0;
+                const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                return `
+                    <div class="emotion-row">
+                        <span class="row-emoji">${e.emoji}</span>
+                        <span class="row-name">${e.label}</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-${e.key}" id="bar-${e.key}" style="width:${pct}%"></div>
+                        </div>
+                        <span class="row-percent" id="pct-${e.key}">${pct}%</span>
+                        <span class="row-count" id="cnt-${e.key}">${count}</span>
+                        <button class="log-btn" id="btn-${e.key}" onclick="logEmotion('${e.key}','${e.label}')">+</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function logEmotion(key, label) {
+            const data = loadData();
+            data[key] = (data[key] || 0) + 1;
+            saveData(data);
+            localStorage.setItem('lastEmotionTime', new Date().toISOString());
+            localStorage.setItem('lastEmotionLabel', label);
+
+            // Pop animation
+            const btn = document.getElementById('btn-' + key);
+            btn.classList.remove('popped');
+            void btn.offsetWidth;
+            btn.classList.add('popped');
+
+            render();
+        }
+
+        function resetAll() {
+            if (confirm('Reset all emotion logs?')) {
+                localStorage.removeItem('emotionLog');
+                localStorage.removeItem('lastEmotionTime');
+                localStorage.removeItem('lastEmotionLabel');
+                render();
+            }
+        }
+
+        render();
+    </script>
+
+</body>
+</html>

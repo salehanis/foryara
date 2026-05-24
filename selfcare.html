@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self Care</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .care-page { min-height:100vh; background:url('bg.gif') center/contain no-repeat; background-color:#1a1a2e; display:flex; flex-direction:column; align-items:center; }
+        .care-header { text-align:center; padding:10px 20px 20px; }
+        .care-icon { font-size:4.5rem; display:block; animation:bigBounce 2s ease-in-out infinite; margin-bottom:8px; }
+        .care-title { font-size:2.6rem; color:white; text-shadow:4px 4px 0 rgba(0,0,0,.5),-2px -2px 0 rgba(0,0,0,.28); letter-spacing:2px; }
+        .care-sub { font-family:'Nunito',sans-serif; font-size:.95rem; color:rgba(255,255,255,.8); font-weight:700; margin-top:6px; }
+        .care-section { width:100%; max-width:720px; padding:30px 25px 50px; }
+
+        .care-box {
+            background:rgba(255,254,242,.6);
+            backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+            border:5px solid #222; border-radius:30px;
+            box-shadow:8px 8px 0 #222; padding:28px 30px;
+            animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+
+        .care-box-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:16px; border-bottom:3px dashed #ddd; }
+        .care-box-title { font-family:'Fredoka One',cursive; font-size:1.6rem; color:#333; }
+
+        .progress-ring { position:relative; width:56px; height:56px; }
+        .progress-ring svg { transform:rotate(-90deg); }
+        .progress-ring circle { fill:none; stroke-width:5; }
+        .ring-bg { stroke:#eee; }
+        .ring-fill { stroke:#a78bfa; stroke-linecap:round; transition:stroke-dashoffset .5s ease; }
+        .progress-text { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Fredoka One',cursive; font-size:.9rem; color:#333; }
+
+        /* Checklist items */
+        .check-item {
+            display:flex; align-items:center; gap:14px;
+            padding:12px 6px; border-bottom:2px solid rgba(200,200,200,.3);
+            cursor:pointer; transition:background .15s; border-radius:12px;
+        }
+        .check-item:last-child { border-bottom:none; }
+        .check-item:hover { background:rgba(167,139,250,.1); }
+
+        .custom-check {
+            width:28px; height:28px; border-radius:8px;
+            border:3px solid #ccc; display:flex; align-items:center; justify-content:center;
+            flex-shrink:0; transition:all .2s ease; background:white;
+            font-size:1rem;
+        }
+        .check-item.done .custom-check { background:#a78bfa; border-color:#7c3aed; }
+
+        .check-emoji { font-size:1.6rem; flex-shrink:0; }
+        .check-label { font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700; color:#444; flex:1; }
+        .check-item.done .check-label { text-decoration:line-through; color:#aaa; }
+
+        /* All done message */
+        .all-done {
+            display:none; text-align:center; padding:20px 0 10px;
+            animation:notePop .5s ease both;
+        }
+        .all-done.show { display:block; }
+        .all-done-emoji { font-size:3.5rem; display:block; margin-bottom:8px; animation:bigBounce 2s ease-in-out infinite; }
+        .all-done-text { font-family:'Fredoka One',cursive; font-size:1.4rem; color:#333; margin-bottom:6px; }
+        .all-done-sub { font-family:'Nunito',sans-serif; font-size:.9rem; color:#888; font-weight:700; }
+
+        .reset-care-btn {
+            margin-top:18px; width:100%;
+            font-family:'Fredoka One',cursive; font-size:.95rem; color:#bbb;
+            background:transparent; border:3px solid #ddd; border-radius:50px; padding:8px;
+            cursor:pointer; transition:all .2s;
+        }
+        .reset-care-btn:hover { color:#ff4444; border-color:#ff4444; }
+
+        .resets-note { font-family:'Nunito',sans-serif; font-size:.78rem; color:#ccc; font-weight:600; text-align:center; margin-top:10px; }
+    </style>
+</head>
+<body class="care-page">
+    <div class="rainbow-bar"></div>
+    <nav class="emotion-nav"><a href="index.html" class="back-btn">← Back</a></nav>
+
+    <div class="care-header">
+        <span class="care-icon">🍵</span>
+        <h1 class="care-title">Self Care</h1>
+        <p class="care-sub">you matter — take care of yourself 🤍</p>
+    </div>
+
+    <section class="care-section">
+        <div class="care-box">
+            <div class="care-box-top">
+                <span class="care-box-title">today's checklist</span>
+                <div class="progress-ring">
+                    <svg width="56" height="56" viewBox="0 0 56 56">
+                        <circle class="ring-bg" cx="28" cy="28" r="22"/>
+                        <circle class="ring-fill" id="ringFill" cx="28" cy="28" r="22" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
+                    </svg>
+                    <div class="progress-text" id="progressText">0/8</div>
+                </div>
+            </div>
+
+            <div id="checkList"></div>
+
+            <div class="all-done" id="allDone">
+                <span class="all-done-emoji">🌟</span>
+                <div class="all-done-text">you did it ya albee!! 💛</div>
+                <div class="all-done-sub">I'm so proud of you. you took care of yourself today 🤍</div>
+            </div>
+
+            <button class="reset-care-btn" onclick="resetChecks()">reset checklist</button>
+            <p class="resets-note">✨ resets automatically every day</p>
+        </div>
+    </section>
+
+    <script>
+        const items = [
+            { key:'eaten',    emoji:'🍽️', label:'Have you eaten today?' },
+            { key:'water',    emoji:'💧', label:'Have you drunk enough water?' },
+            { key:'rested',   emoji:'😴', label:'Have you rested / slept well?' },
+            { key:'outside',  emoji:'🌿', label:'Have you gone outside?' },
+            { key:'showered', emoji:'🚿', label:'Have you showered?' },
+            { key:'moved',    emoji:'🚶', label:'Have you moved your body?' },
+            { key:'joy',      emoji:'🎵', label:'Done something you enjoy?' },
+            { key:'kind',     emoji:'🤍', label:'Been kind to yourself today?' },
+        ];
+
+        const CIRC = 2 * Math.PI * 22;
+
+        function getTodayKey() { return 'care_' + new Date().toISOString().slice(0,10); }
+
+        function loadChecks() {
+            const saved = JSON.parse(localStorage.getItem(getTodayKey()) || '{}');
+            // Clear old keys
+            Object.keys(localStorage).forEach(k => { if (k.startsWith('care_') && k !== getTodayKey()) localStorage.removeItem(k); });
+            return saved;
+        }
+
+        function saveChecks(data) { localStorage.setItem(getTodayKey(), JSON.stringify(data)); }
+
+        function render() {
+            const data = loadChecks();
+            const done = Object.values(data).filter(Boolean).length;
+            const total = items.length;
+            const pct = done / total;
+
+            document.getElementById('progressText').textContent = done + '/' + total;
+            document.getElementById('ringFill').style.strokeDashoffset = CIRC * (1 - pct);
+
+            const list = document.getElementById('checkList');
+            list.innerHTML = items.map(it => `
+                <div class="check-item ${data[it.key] ? 'done' : ''}" onclick="toggle('${it.key}')">
+                    <div class="custom-check">${data[it.key] ? '✓' : ''}</div>
+                    <span class="check-emoji">${it.emoji}</span>
+                    <span class="check-label">${it.label}</span>
+                </div>
+            `).join('');
+
+            if (done === total) {
+                document.getElementById('allDone').classList.add('show');
+            } else {
+                document.getElementById('allDone').classList.remove('show');
+            }
+        }
+
+        function toggle(key) {
+            const data = loadChecks();
+            data[key] = !data[key];
+            saveChecks(data);
+            render();
+        }
+
+        function resetChecks() {
+            localStorage.removeItem(getTodayKey());
+            render();
+        }
+
+        render();
+    </script>
+</body>
+</html>

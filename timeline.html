@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Story</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .timeline-page { min-height:100vh; background:url('bg.gif') center/contain no-repeat; background-color:#1a1a2e; display:flex; flex-direction:column; align-items:center; }
+        .tl-header { text-align:center; padding:10px 20px 20px; }
+        .tl-icon { font-size:4.5rem; display:block; animation:bigBounce 2s ease-in-out infinite; margin-bottom:8px; }
+        .tl-title { font-size:2.6rem; color:white; text-shadow:4px 4px 0 rgba(0,0,0,.5),-2px -2px 0 rgba(0,0,0,.28); letter-spacing:2px; }
+        .tl-sub { font-family:'Nunito',sans-serif; font-size:.95rem; color:rgba(255,255,255,.8); font-weight:700; margin-top:6px; }
+        .tl-section { width:100%; max-width:720px; padding:20px 25px 50px; }
+
+        /* Add new moment form */
+        .add-box {
+            background:rgba(255,254,242,.6);
+            backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+            border:5px solid #222; border-radius:30px;
+            box-shadow:8px 8px 0 #222; padding:26px 28px;
+            margin-bottom:28px;
+            animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+        .add-box-title { font-family:'Fredoka One',cursive; font-size:1.4rem; color:#333; margin-bottom:16px; }
+
+        .form-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+        .form-group { display:flex; flex-direction:column; gap:5px; flex:1; min-width:140px; }
+        .form-label { font-family:'Nunito',sans-serif; font-size:.8rem; font-weight:900; color:#888; letter-spacing:1px; text-transform:uppercase; }
+
+        .tl-input, .tl-select {
+            padding:9px 12px; border:3px solid #ddd; border-radius:12px;
+            font-family:'Nunito',sans-serif; font-size:.95rem; font-weight:700; color:#444;
+            background:rgba(255,255,255,.8); outline:none; transition:border .2s; width:100%; box-sizing:border-box;
+        }
+        .tl-input:focus, .tl-select:focus { border-color:#a78bfa; }
+
+        .tl-textarea {
+            padding:9px 12px; border:3px solid #ddd; border-radius:12px;
+            font-family:'Nunito',sans-serif; font-size:.95rem; font-weight:700; color:#444;
+            background:rgba(255,255,255,.8); outline:none; transition:border .2s;
+            width:100%; box-sizing:border-box; resize:none; min-height:70px; line-height:1.6;
+        }
+        .tl-textarea:focus { border-color:#a78bfa; }
+        .tl-textarea::placeholder { color:#bbb; font-weight:600; }
+
+        .add-moment-btn {
+            width:100%; margin-top:4px;
+            font-family:'Fredoka One',cursive; font-size:1.1rem; color:white;
+            background:linear-gradient(135deg,#f093fb,#a78bfa);
+            border:4px solid #222; border-radius:50px; padding:12px;
+            cursor:pointer; box-shadow:5px 5px 0 #222; letter-spacing:1px;
+            transition:all .2s;
+        }
+        .add-moment-btn:hover { transform:translateY(-3px); box-shadow:7px 8px 0 #222; }
+        .add-moment-btn:active { transform:translateY(2px); box-shadow:2px 2px 0 #222; }
+
+        /* Timeline */
+        .timeline { position:relative; padding-left:40px; }
+        .timeline::before {
+            content:''; position:absolute; left:16px; top:0; bottom:0;
+            width:4px; background:linear-gradient(180deg,#f093fb,#a78bfa,#7c3aed);
+            border-radius:4px;
+        }
+
+        .tl-item {
+            position:relative; margin-bottom:20px;
+            animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+
+        .tl-dot {
+            position:absolute; left:-32px; top:18px;
+            width:28px; height:28px; border-radius:50%;
+            border:4px solid #222; display:flex; align-items:center; justify-content:center;
+            font-size:1rem; background:white; box-shadow:3px 3px 0 #222;
+            z-index:1;
+        }
+
+        .tl-card {
+            background:rgba(255,254,242,.65);
+            backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+            border:4px solid #222; border-radius:20px;
+            box-shadow:6px 6px 0 #222; padding:16px 18px;
+        }
+
+        .tl-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+        .tl-card-date { font-family:'Nunito',sans-serif; font-size:.78rem; font-weight:900; color:#a78bfa; letter-spacing:1px; text-transform:uppercase; }
+        .tl-card-title { font-family:'Fredoka One',cursive; font-size:1.2rem; color:#333; margin-bottom:4px; }
+        .tl-card-note { font-family:'Nunito',sans-serif; font-size:.9rem; color:#666; font-weight:700; line-height:1.5; }
+
+        .tl-delete-btn {
+            background:transparent; border:none; cursor:pointer;
+            font-size:.85rem; color:#ccc; padding:2px 4px; border-radius:6px;
+            transition:color .2s;
+        }
+        .tl-delete-btn:hover { color:#ff4444; }
+
+        .empty-state {
+            text-align:center; padding:40px 20px;
+            font-family:'Nunito',sans-serif; font-size:1rem; color:rgba(255,255,255,.6); font-weight:700;
+        }
+        .empty-emoji { font-size:3rem; display:block; margin-bottom:12px; }
+
+        /* Category color dots */
+        .cat-first    { background:#FFD700; }
+        .cat-milestone{ background:#a78bfa; }
+        .cat-trip     { background:#34d399; }
+        .cat-special  { background:#f093fb; }
+        .cat-memory   { background:#fb923c; }
+        .cat-other    { background:#60a5fa; }
+    </style>
+</head>
+<body class="timeline-page">
+    <div class="rainbow-bar"></div>
+    <nav class="emotion-nav"><a href="index.html" class="back-btn">← Back</a></nav>
+
+    <div class="tl-header">
+        <span class="tl-icon">📅</span>
+        <h1 class="tl-title">Our Story</h1>
+        <p class="tl-sub">every moment we've shared 💛</p>
+    </div>
+
+    <section class="tl-section">
+
+        <!-- Add new moment -->
+        <div class="add-box">
+            <div class="add-box-title">add a moment 💛</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">date</label>
+                    <input type="date" class="tl-input" id="newDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">category</label>
+                    <select class="tl-select" id="newCat">
+                        <option value="first">💛 first times</option>
+                        <option value="milestone">✨ milestone</option>
+                        <option value="trip">✈️ trip / outing</option>
+                        <option value="special">🌟 special moment</option>
+                        <option value="memory">🥺 favorite memory</option>
+                        <option value="other">💬 other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group" style="flex:2">
+                    <label class="form-label">title</label>
+                    <input type="text" class="tl-input" id="newTitle" placeholder="e.g. first call, first date...">
+                </div>
+                <div class="form-group" style="flex:1; min-width:60px;">
+                    <label class="form-label">emoji</label>
+                    <input type="text" class="tl-input" id="newEmoji" placeholder="💛" maxlength="4" style="text-align:center; font-size:1.3rem;">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom:14px;">
+                <label class="form-label">note (optional)</label>
+                <textarea class="tl-textarea" id="newNote" placeholder="write a little something about this moment..."></textarea>
+            </div>
+            <button class="add-moment-btn" onclick="addMoment()">+ add to our story</button>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline" id="timeline"></div>
+
+    </section>
+
+    <script>
+        const catEmojis = { first:'💛', milestone:'✨', trip:'✈️', special:'🌟', memory:'🥺', other:'💬' };
+        const catColors = { first:'cat-first', milestone:'cat-milestone', trip:'cat-trip', special:'cat-special', memory:'cat-memory', other:'cat-other' };
+        const catLabels = { first:'first times', milestone:'milestone', trip:'trip / outing', special:'special moment', memory:'favorite memory', other:'other' };
+
+        function load() { return JSON.parse(localStorage.getItem('ourTimeline') || '[]'); }
+        function save(data) { localStorage.setItem('ourTimeline', JSON.stringify(data)); }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            return d.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+        }
+
+        function render() {
+            const data = load().sort((a, b) => new Date(b.date) - new Date(a.date));
+            const tl = document.getElementById('timeline');
+
+            if (data.length === 0) {
+                tl.innerHTML = `<div class="empty-state"><span class="empty-emoji">💛</span>no moments yet — add your first one above!</div>`;
+                return;
+            }
+
+            tl.innerHTML = data.map((m, i) => `
+                <div class="tl-item">
+                    <div class="tl-dot ${catColors[m.cat] || 'cat-other'}">${m.emoji || catEmojis[m.cat]}</div>
+                    <div class="tl-card">
+                        <div class="tl-card-top">
+                            <span class="tl-card-date">${formatDate(m.date)} · ${catLabels[m.cat] || 'other'}</span>
+                            <button class="tl-delete-btn" onclick="deleteMoment(${i})">✕</button>
+                        </div>
+                        <div class="tl-card-title">${m.title}</div>
+                        ${m.note ? `<div class="tl-card-note">${m.note}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addMoment() {
+            const date = document.getElementById('newDate').value;
+            const title = document.getElementById('newTitle').value.trim();
+            const cat = document.getElementById('newCat').value;
+            const emoji = document.getElementById('newEmoji').value.trim();
+            const note = document.getElementById('newNote').value.trim();
+
+            if (!date || !title) {
+                if (!date) document.getElementById('newDate').style.borderColor = '#ff4444';
+                if (!title) document.getElementById('newTitle').style.borderColor = '#ff4444';
+                setTimeout(() => {
+                    document.getElementById('newDate').style.borderColor = '#ddd';
+                    document.getElementById('newTitle').style.borderColor = '#ddd';
+                }, 1500);
+                return;
+            }
+
+            const data = load();
+            data.push({ date, title, cat, emoji: emoji || catEmojis[cat], note });
+            save(data);
+
+            document.getElementById('newDate').value = '';
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newEmoji').value = '';
+            document.getElementById('newNote').value = '';
+            document.getElementById('newCat').value = 'first';
+
+            render();
+        }
+
+        function deleteMoment(idx) {
+            const data = load().sort((a, b) => new Date(b.date) - new Date(a.date));
+            data.splice(idx, 1);
+            save(data);
+            render();
+        }
+
+        render();
+    </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release It</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .release-page { min-height:100vh; background:url('bg.gif') center/contain no-repeat; background-color:#1a1a2e; display:flex; flex-direction:column; align-items:center; overflow:hidden; position:relative; }
+        .rel-header { text-align:center; padding:10px 20px 20px; }
+        .rel-icon { font-size:4.5rem; display:block; animation:bigBounce 2s ease-in-out infinite; margin-bottom:8px; }
+        .rel-title { font-size:2.6rem; color:white; text-shadow:4px 4px 0 rgba(0,0,0,.5),-2px -2px 0 rgba(0,0,0,.28); letter-spacing:2px; }
+        .rel-sub { font-family:'Nunito',sans-serif; font-size:.95rem; color:rgba(255,255,255,.8); font-weight:700; margin-top:6px; }
+        .rel-section { width:100%; max-width:720px; padding:30px 25px 50px; }
+
+        .rel-box {
+            background:rgba(255,254,242,.6);
+            backdrop-filter:blur(8px);
+            -webkit-backdrop-filter:blur(8px);
+            border:5px solid #222;
+            border-radius:30px;
+            box-shadow:8px 8px 0 #222;
+            padding:30px 32px;
+            animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+
+        .rel-heading { font-family:'Fredoka One',cursive; font-size:1.6rem; color:#333; margin-bottom:16px; padding-bottom:14px; border-bottom:3px dashed #ddd; }
+
+        textarea.rel-area {
+            width:100%; min-height:220px; border:none; background:transparent;
+            font-family:'Nunito',sans-serif; font-size:1.1rem; font-weight:700; color:#333;
+            resize:none; outline:none; line-height:2;
+            background-image:repeating-linear-gradient(transparent,transparent 31px,#c8d8f0 31px,#c8d8f0 32px);
+        }
+
+        textarea.rel-area::placeholder { color:#bbb; font-weight:600; }
+
+        .let-go-btn {
+            width:100%; margin-top:20px;
+            font-family:'Fredoka One',cursive; font-size:1.3rem; color:white;
+            background:linear-gradient(135deg,#a78bfa,#7c3aed);
+            border:4px solid #222; border-radius:50px; padding:14px;
+            cursor:pointer; box-shadow:5px 5px 0 #222; letter-spacing:1px;
+            transition:all .2s ease;
+        }
+        .let-go-btn:hover { transform:translateY(-3px); box-shadow:7px 8px 0 #222; }
+        .let-go-btn:active { transform:translateY(2px); box-shadow:2px 2px 0 #222; }
+
+        /* Floating balloons animation */
+        .balloon {
+            position:fixed;
+            font-size:2.5rem;
+            animation:floatUp 3s ease-in forwards;
+            pointer-events:none;
+            z-index:999;
+        }
+
+        @keyframes floatUp {
+            0%   { transform:translateY(0) rotate(0deg); opacity:1; }
+            100% { transform:translateY(-120vh) rotate(20deg); opacity:0; }
+        }
+
+        /* Released state */
+        .released-view { display:none; text-align:center; padding:20px 0; animation:notePop .5s ease both; }
+        .released-view.show { display:block; }
+        .released-emoji { font-size:5rem; display:block; margin-bottom:12px; animation:bigBounce 2s ease-in-out infinite; }
+        .released-title { font-family:'Fredoka One',cursive; font-size:2rem; color:#333; margin-bottom:8px; }
+        .released-sub { font-family:'Nunito',sans-serif; font-size:1rem; color:#666; font-weight:700; margin-bottom:24px; line-height:1.6; }
+        .write-more-btn {
+            font-family:'Fredoka One',cursive; font-size:1rem; color:#7c3aed;
+            background:transparent; border:3px solid #7c3aed; border-radius:50px;
+            padding:10px 28px; cursor:pointer; transition:all .2s;
+        }
+        .write-more-btn:hover { background:#7c3aed; color:white; }
+    </style>
+</head>
+<body class="release-page">
+    <div class="rainbow-bar"></div>
+    <nav class="emotion-nav"><a href="index.html" class="back-btn">← Back</a></nav>
+
+    <div class="rel-header">
+        <span class="rel-icon">☁️</span>
+        <h1 class="rel-title">Release It</h1>
+        <p class="rel-sub">write it out, then let it go 🎈</p>
+    </div>
+
+    <section class="rel-section">
+        <div class="rel-box">
+            <div class="rel-heading">what's been weighing on you?</div>
+
+            <div id="writeView">
+                <textarea class="rel-area" id="releaseArea" placeholder="write anything... every worry, every thought, every feeling. this is your safe space 🤍"></textarea>
+                <button class="let-go-btn" onclick="letItGo()">let it go 🎈</button>
+            </div>
+
+            <div class="released-view" id="releasedView">
+                <span class="released-emoji">🕊️</span>
+                <div class="released-title">It's gone 💛</div>
+                <p class="released-sub">you released it into the universe.<br>you don't have to carry it anymore.<br>you're lighter now 🤍</p>
+                <button class="write-more-btn" onclick="writeMore()">release something else</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const balloons = ['🎈','🎈','☁️','🎈','✨','🌸','🎈','💨'];
+
+        function letItGo() {
+            const area = document.getElementById('releaseArea');
+            if (!area.value.trim()) { area.placeholder = 'write something first 🤍'; area.focus(); return; }
+
+            // Launch balloons from multiple positions
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    const b = document.createElement('span');
+                    b.className = 'balloon';
+                    b.textContent = balloons[Math.floor(Math.random() * balloons.length)];
+                    b.style.left = (10 + Math.random() * 80) + 'vw';
+                    b.style.bottom = '20%';
+                    b.style.animationDuration = (2 + Math.random() * 2) + 's';
+                    b.style.fontSize = (1.5 + Math.random() * 2) + 'rem';
+                    document.body.appendChild(b);
+                    setTimeout(() => b.remove(), 4000);
+                }, i * 120);
+            }
+
+            setTimeout(() => {
+                area.value = '';
+                document.getElementById('writeView').style.display = 'none';
+                document.getElementById('releasedView').classList.add('show');
+            }, 600);
+        }
+
+        function writeMore() {
+            document.getElementById('releasedView').classList.remove('show');
+            document.getElementById('writeView').style.display = 'block';
+            document.getElementById('releaseArea').focus();
+        }
+    </script>
+</body>
+</html>

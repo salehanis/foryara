@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .count-page { min-height:100vh; background:url('bg.gif') center/contain no-repeat; background-color:#1a1a2e; display:flex; flex-direction:column; align-items:center; }
+        .count-header { text-align:center; padding:10px 20px 20px; }
+        .count-icon { font-size:4.5rem; display:block; animation:bigBounce 2s ease-in-out infinite; margin-bottom:8px; }
+        .count-title { font-size:2.6rem; color:white; text-shadow:4px 4px 0 rgba(0,0,0,0.5),-2px -2px 0 rgba(0,0,0,0.28); letter-spacing:2px; }
+        .count-sub { font-family:'Nunito',sans-serif; font-size:.95rem; color:rgba(255,255,255,.8); font-weight:700; margin-top:6px; }
+        .count-section { width:100%; max-width:720px; padding:30px 25px 50px; display:flex; flex-direction:column; gap:20px; }
+
+        .count-card {
+            background:rgba(255,254,242,.6);
+            backdrop-filter:blur(8px);
+            -webkit-backdrop-filter:blur(8px);
+            border:5px solid #222;
+            border-radius:30px;
+            box-shadow:8px 8px 0 #222;
+            padding:28px 30px;
+            text-align:center;
+            animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+
+        .count-label { font-family:'Fredoka One',cursive; font-size:1.2rem; color:#666; margin-bottom:12px; }
+        .count-number { font-family:'Fredoka One',cursive; font-size:5rem; color:#333; line-height:1; text-shadow:3px 3px 0 rgba(0,0,0,.1); }
+        .count-unit { font-family:'Nunito',sans-serif; font-size:1rem; color:#888; font-weight:700; margin-top:4px; }
+        .count-emoji-big { font-size:2.5rem; margin-bottom:8px; display:block; }
+
+        .edit-section { margin-top:18px; padding-top:16px; border-top:3px dashed #ddd; }
+        .edit-label { font-family:'Nunito',sans-serif; font-size:.85rem; color:#999; font-weight:700; margin-bottom:6px; display:block; }
+        .date-input {
+            width:100%; padding:10px 14px;
+            border:3px solid #ddd; border-radius:12px;
+            font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700; color:#444;
+            background:rgba(255,255,255,.8); outline:none;
+            transition:border .2s;
+        }
+        .date-input:focus { border-color:#a78bfa; }
+        .save-date-btn {
+            margin-top:10px; width:100%;
+            font-family:'Fredoka One',cursive; font-size:1rem; color:white;
+            background:linear-gradient(135deg,#a78bfa,#7c3aed);
+            border:3px solid #222; border-radius:50px; padding:10px;
+            cursor:pointer; box-shadow:3px 3px 0 #222;
+            transition:all .2s ease;
+        }
+        .save-date-btn:hover { transform:translateY(-2px); box-shadow:5px 6px 0 #222; }
+
+        .heart-divider { font-size:2.5rem; text-align:center; animation:bigBounce 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="count-page">
+    <div class="rainbow-bar"></div>
+    <nav class="emotion-nav"><a href="index.html" class="back-btn">← Back</a></nav>
+
+    <div class="count-header">
+        <span class="count-icon">💛</span>
+        <h1 class="count-title">Our Countdown</h1>
+        <p class="count-sub">every day with you counts 🤍</p>
+    </div>
+
+    <section class="count-section">
+
+        <!-- Days since we met -->
+        <div class="count-card">
+            <span class="count-emoji-big">🌟</span>
+            <div class="count-label">days since we met</div>
+            <div class="count-number" id="daysSinceMet">—</div>
+            <div class="count-unit">days together 💛</div>
+            <div class="edit-section">
+                <label class="edit-label">the day we met:</label>
+                <input type="date" class="date-input" id="metDateInput">
+                <button class="save-date-btn" onclick="saveMetDate()">save 💛</button>
+            </div>
+        </div>
+
+        <div class="heart-divider">💛</div>
+
+        <!-- Days until next meeting -->
+        <div class="count-card">
+            <span class="count-emoji-big">✈️</span>
+            <div class="count-label" id="nextLabel">days until i see you</div>
+            <div class="count-number" id="daysUntilMeet">—</div>
+            <div class="count-unit" id="nextUnit">more days 🥺</div>
+            <div class="edit-section">
+                <label class="edit-label">next time we meet:</label>
+                <input type="date" class="date-input" id="nextMeetInput">
+                <button class="save-date-btn" onclick="saveNextMeet()">save 💛</button>
+            </div>
+        </div>
+
+    </section>
+
+    <script>
+        function daysDiff(dateStr) {
+            const d = new Date(dateStr);
+            const now = new Date();
+            now.setHours(0,0,0,0);
+            d.setHours(0,0,0,0);
+            return Math.round((now - d) / 86400000);
+        }
+
+        function load() {
+            const metDate = localStorage.getItem('metDate');
+            const nextMeet = localStorage.getItem('nextMeetDate');
+
+            if (metDate) {
+                document.getElementById('metDateInput').value = metDate;
+                const diff = daysDiff(metDate);
+                document.getElementById('daysSinceMet').textContent = diff;
+            }
+
+            if (nextMeet) {
+                document.getElementById('nextMeetInput').value = nextMeet;
+                const diff = daysDiff(nextMeet);
+                if (diff <= 0) {
+                    document.getElementById('daysUntilMeet').textContent = Math.abs(diff);
+                    document.getElementById('nextLabel').textContent = '🎉 we met!';
+                    document.getElementById('nextUnit').textContent = 'days ago 🥰';
+                } else {
+                    document.getElementById('daysUntilMeet').textContent = diff;
+                    document.getElementById('nextLabel').textContent = 'days until i see you';
+                    document.getElementById('nextUnit').textContent = 'more days 🥺';
+                }
+            }
+        }
+
+        function saveMetDate() {
+            const val = document.getElementById('metDateInput').value;
+            if (!val) return;
+            localStorage.setItem('metDate', val);
+            load();
+        }
+
+        function saveNextMeet() {
+            const val = document.getElementById('nextMeetInput').value;
+            if (!val) return;
+            localStorage.setItem('nextMeetDate', val);
+            load();
+        }
+
+        load();
+    </script>
+</body>
+</html>

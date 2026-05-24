@@ -1,0 +1,492 @@
+/* ==============================
+   GUMBALL FEELINGS WEBSITE
+   ============================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&family=Boogaloo&display=swap');
+
+:root {
+    --outline: #1a1a1a;
+    --card-shadow: 6px 6px 0px var(--outline);
+}
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Fredoka One', cursive;
+    min-height: 100vh;
+}
+
+/* ---- Animated Rainbow Bar ---- */
+.rainbow-bar {
+    height: 14px;
+    background: linear-gradient(90deg,
+        #FF0000 0%,
+        #FF7700 16.6%,
+        #FFFF00 33.3%,
+        #00FF00 50%,
+        #0000FF 66.6%,
+        #8B00FF 83.3%,
+        #FF0000 100%
+    );
+    background-size: 200% 100%;
+    animation: rainbowSlide 3s linear infinite;
+}
+
+@keyframes rainbowSlide {
+    0%   { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+
+/* ==============================
+   MAIN PAGE
+   ============================== */
+
+.main-page {
+    background: url('bg.gif') center center / contain no-repeat;
+    background-color: #b0c4d8;
+}
+
+.main-container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 50px 25px 45px;
+    position: relative;
+    min-height: calc(100vh - 28px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent;
+}
+
+/* Floating background decorations */
+.float-deco {
+    position: fixed;
+    font-size: 2.2rem;
+    animation: floatDeco 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+    user-select: none;
+}
+
+@keyframes floatDeco {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%       { transform: translateY(-22px) rotate(12deg); }
+}
+
+/* Main Header */
+.main-header {
+    text-align: center;
+    margin-bottom: 50px;
+    position: relative;
+    z-index: 1;
+}
+
+.cat-icon {
+    font-size: 5.5rem;
+    display: block;
+    margin-bottom: 14px;
+    animation: catBounce 2.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 24px rgba(30, 144, 255, 0.7));
+}
+
+@keyframes catBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50%       { transform: translateY(-18px) scale(1.06); }
+}
+
+.main-title {
+    font-size: 3.8rem;
+    color: #ffffff;
+    text-shadow:
+        4px 4px 0 var(--outline),
+        -2px -2px 0 var(--outline),
+         2px -2px 0 var(--outline),
+        -2px  2px 0 var(--outline);
+    letter-spacing: 2px;
+    line-height: 1.1;
+    margin-bottom: 14px;
+}
+
+.main-subtitle {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Emotions Grid */
+.emotions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 85%;
+    max-width: 360px;
+    position: relative;
+    z-index: 1;
+    margin-top: 380px;
+}
+
+/* Base Emotion Card */
+.emotion-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 17px 8px;
+    border-radius: 28px;
+    border: 5px solid var(--outline);
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition:
+        transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.18s ease;
+}
+
+.emotion-card:hover {
+    transform: translateY(-12px) rotate(-1.5deg);
+    box-shadow: 10px 18px 0px var(--outline);
+}
+
+.emotion-card:active {
+    transform: translateY(4px) scale(0.97);
+    box-shadow: 2px 2px 0px var(--outline);
+}
+
+/* Card colors */
+.mad-card        { background: linear-gradient(145deg, #FF6B35 0%, #FF4136 60%, #CC0000 100%); }
+.sad-card        { background: linear-gradient(145deg, #64B5F6 0%, #2196F3 60%, #1565C0 100%); }
+.anxious-card    { background: linear-gradient(145deg, #69F0AE 0%, #00C853 60%, #00796B 100%); }
+.depressed-card  { background: linear-gradient(145deg, #CE93D8 0%, #9C27B0 60%, #4A148C 100%); }
+
+/* Card emoji */
+.card-emoji {
+    font-size: 1.9rem;
+    margin-bottom: 5px;
+    display: block;
+    transition: transform 0.28s ease;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+}
+
+.emotion-card:hover .card-emoji {
+    transform: scale(1.22) rotate(6deg);
+}
+
+.card-label {
+    font-size: 0.75rem;
+    color: white;
+    letter-spacing: 0.5px;
+    text-shadow:
+        3px 3px 0 rgba(0,0,0,0.38),
+        -1px -1px 0 rgba(0,0,0,0.2);
+}
+
+/* Glossy shine overlay */
+.card-glow {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.28) 0%, transparent 55%);
+    pointer-events: none;
+    border-radius: 23px;
+}
+
+/* Vent & Thoughts button */
+.vent-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 85%;
+    max-width: 360px;
+    margin-top: 22px;
+    padding: 18px 22px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 4px solid rgba(255, 255, 255, 0.7);
+    border-radius: 22px;
+    text-decoration: none;
+    box-shadow: 5px 5px 0px rgba(0,0,0,0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.vent-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 7px 10px 0px rgba(0,0,0,0.4);
+}
+
+.vent-btn:active {
+    transform: translateY(2px);
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.4);
+}
+
+.vent-icon {
+    font-size: 2.2rem;
+}
+
+.vent-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.vent-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    color: white;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+    letter-spacing: 0.5px;
+}
+
+.vent-sub {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.85);
+    font-weight: 600;
+}
+
+.vent-arrow {
+    font-size: 1.5rem;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+}
+
+/* Bottom decoration row */
+.bottom-deco {
+    margin-top: 52px;
+    font-size: 2.5rem;
+    display: flex;
+    gap: 25px;
+    animation: floatRow 3.5s ease-in-out infinite;
+    z-index: 1;
+    position: relative;
+}
+
+@keyframes floatRow {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-14px); }
+}
+
+
+/* ==============================
+   EMOTION PAGES (shared)
+   ============================== */
+
+.emotion-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Page background gradients */
+.page-mad       { background: url('mad-bg.gif') center center / contain no-repeat; background-color: #c0522a; }
+.page-sad       { background: url('sad-emoji.gif') center center / contain no-repeat; background-color: #f5e6a3; }
+.page-anxious   { background: url('anxious-bg.gif') center center / contain no-repeat; background-color: #1a1a2e; }
+.page-depressed { background: url('depressed-bg.gif') center center / contain no-repeat; background-color: #0d0d1a; }
+
+/* Nav bar */
+.emotion-nav {
+    width: 100%;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.15rem;
+    color: white;
+    text-decoration: none;
+    background: rgba(0, 0, 0, 0.28);
+    border: 3px solid rgba(255, 255, 255, 0.7);
+    padding: 10px 24px;
+    border-radius: 50px;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: white;
+    transform: scale(1.06);
+}
+
+/* Emotion header */
+.emotion-header {
+    text-align: center;
+    padding: 10px 20px 30px;
+}
+
+.big-emoji {
+    font-size: 7.5rem;
+    display: block;
+    animation: bigBounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.45));
+    margin-bottom: 10px;
+}
+
+.big-emoji-gif {
+    width: 156px;
+    height: auto;
+    display: block;
+    margin: 0 auto 10px;
+    animation: bigBounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.45));
+}
+
+@keyframes bigBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50%       { transform: translateY(-20px) scale(1.08); }
+}
+
+.emotion-title {
+    font-size: 3.5rem;
+    color: white;
+    text-shadow:
+        4px 4px 0 rgba(0,0,0,0.5),
+        -2px -2px 0 rgba(0,0,0,0.28);
+    letter-spacing: 2px;
+}
+
+/* Note section */
+.note-section {
+    flex: 1;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 42px 25px 55px; /* top padding leaves room for the triangle */
+}
+
+/* Speech-bubble note card */
+.note {
+    background: rgba(255, 254, 242, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 5px solid #222;
+    border-radius: 30px;
+    box-shadow: 8px 8px 0px #222;
+    padding: 38px 44px;
+    position: relative;
+    animation: notePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes notePop {
+    0%   { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1);    opacity: 1; }
+}
+
+/* Triangle pointing up toward the emoji */
+.note::before {
+    content: '';
+    position: absolute;
+    top: -33px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 24px solid transparent;
+    border-right: 24px solid transparent;
+    border-bottom: 33px solid #222;
+}
+
+.note::after {
+    content: '';
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-bottom: 26px solid #FFFEF2;
+}
+
+/* Note header row */
+.note-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 3px dashed #ccc;
+}
+
+.note-icon {
+    font-size: 2rem;
+}
+
+.note-heading {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.95rem;
+    color: #333;
+    letter-spacing: 0.5px;
+}
+
+/* Lined-paper note body */
+.note-content {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.18rem;
+    line-height: 2;
+    color: #444;
+    font-weight: 700;
+    background-image: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        #c8d8f0 31px,
+        #c8d8f0 32px
+    );
+    padding-bottom: 16px;
+    min-height: 200px;
+}
+
+.note-content p {
+    margin-bottom: 16px;
+}
+
+.note-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Signature */
+.note-signature {
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 3px dashed #ccc;
+    text-align: right;
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.65rem;
+    color: #888;
+}
+
+
+/* ==============================
+   RESPONSIVE
+   ============================== */
+
+@media (max-width: 580px) {
+    .main-title        { font-size: 2.4rem; }
+    .cat-icon          { font-size: 3.8rem; }
+    .emotions-grid     { gap: 16px; }
+    .emotion-card      { padding: 30px 14px; }
+    .card-emoji        { font-size: 3.8rem; }
+    .card-label        { font-size: 1.65rem; }
+
+    .big-emoji         { font-size: 5rem; }
+    .emotion-title     { font-size: 2.5rem; }
+    .note              { padding: 28px 22px; }
+    .note-heading      { font-size: 1.5rem; }
+    .note-content      { font-size: 1.05rem; }
+    .note-section      { padding: 42px 18px 40px; }
+}

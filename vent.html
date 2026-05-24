@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vent & Thoughts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&family=Boogaloo&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .vent-page {
+            min-height: 100vh;
+            background: url('bg.gif') center center / contain no-repeat;
+            background-color: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .vent-header {
+            text-align: center;
+            padding: 10px 20px 20px;
+        }
+
+        .vent-big-icon {
+            font-size: 5rem;
+            display: block;
+            animation: bigBounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.45));
+            margin-bottom: 8px;
+        }
+
+        .vent-page-title {
+            font-size: 2.8rem;
+            color: white;
+            text-shadow: 4px 4px 0 rgba(0,0,0,0.5), -2px -2px 0 rgba(0,0,0,0.28);
+            letter-spacing: 2px;
+        }
+
+        .vent-page-sub {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.8);
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .vent-box-section {
+            width: 100%;
+            max-width: 720px;
+            padding: 40px 25px 50px;
+        }
+
+        .vent-box {
+            background: rgba(255, 254, 242, 0.55);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 5px solid #222;
+            border-radius: 30px;
+            box-shadow: 8px 8px 0px #222;
+            padding: 30px 36px;
+            position: relative;
+            animation: notePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+
+        .vent-box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 3px dashed #ccc;
+        }
+
+        .vent-box-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.7rem;
+            color: #333;
+        }
+
+        .save-indicator {
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.85rem;
+            color: #888;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .save-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+            transition: background 0.3s ease;
+        }
+        .save-dot.saved { background: #4CAF50; }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            border: none;
+            background: transparent;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+            resize: vertical;
+            outline: none;
+            line-height: 2;
+            background-image: repeating-linear-gradient(
+                transparent,
+                transparent 31px,
+                #c8d8f0 31px,
+                #c8d8f0 32px
+            );
+            padding-bottom: 10px;
+        }
+
+        textarea::placeholder {
+            color: #aaa;
+            font-weight: 600;
+        }
+
+        .vent-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 3px dashed #ccc;
+            flex-wrap: wrap;
+        }
+
+        .send-btn {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: 3px solid #222;
+            border-radius: 50px;
+            padding: 10px 28px;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #222;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 5px 6px 0px #222;
+        }
+
+        .send-btn:active {
+            transform: translateY(1px);
+            box-shadow: 1px 1px 0px #222;
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .clear-btn {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            color: #999;
+            background: transparent;
+            border: 3px solid #ddd;
+            border-radius: 50px;
+            padding: 8px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .clear-btn:hover {
+            color: #ff4444;
+            border-color: #ff4444;
+        }
+
+        .char-count {
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.85rem;
+            color: #bbb;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        /* Success message */
+        .success-msg {
+            display: none;
+            text-align: center;
+            padding: 24px;
+            animation: notePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+
+        .success-msg.show { display: block; }
+
+        .success-emoji { font-size: 4rem; display: block; margin-bottom: 12px; }
+
+        .success-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .success-sub {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            color: #666;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .write-again-btn {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            color: #667eea;
+            background: transparent;
+            border: 3px solid #667eea;
+            border-radius: 50px;
+            padding: 8px 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .write-again-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body class="vent-page">
+
+    <!-- Netlify form detection (invisible) -->
+    <form name="vent-thoughts" data-netlify="true" style="display:none">
+        <textarea name="message"></textarea>
+    </form>
+
+    <div class="rainbow-bar"></div>
+
+    <nav class="emotion-nav">
+        <a href="index.html" class="back-btn">← Back</a>
+    </nav>
+
+    <div class="vent-header">
+        <span class="vent-big-icon">📓</span>
+        <h1 class="vent-page-title">Vent & Thoughts</h1>
+        <p class="vent-page-sub">this is your safe space — say anything 🤍</p>
+    </div>
+
+    <section class="vent-box-section">
+        <div class="vent-box">
+            <div class="vent-box-header">
+                <span class="vent-box-title">What's on your mind?</span>
+                <span class="save-indicator">
+                    <span class="save-dot" id="saveDot"></span>
+                    <span id="saveText">draft saved</span>
+                </span>
+            </div>
+
+            <!-- Writing view -->
+            <div id="writeView">
+                <textarea
+                    id="ventArea"
+                    name="message"
+                    placeholder="just start typing... only he can read this when you send it 🤍"
+                ></textarea>
+
+                <div class="vent-actions">
+                    <button class="send-btn" id="sendBtn" onclick="sendVent()">Send 💌</button>
+                    <button class="clear-btn" onclick="clearVent()">clear ✕</button>
+                    <span class="char-count" id="charCount">0 words</span>
+                </div>
+            </div>
+
+            <!-- Success view -->
+            <div class="success-msg" id="successView">
+                <span class="success-emoji">💌</span>
+                <div class="success-title">Sent!</div>
+                <p class="success-sub">He'll read it soon 🤍 you're not alone.</p>
+                <button class="write-again-btn" onclick="writeAgain()">write again</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const area = document.getElementById('ventArea');
+        const saveDot = document.getElementById('saveDot');
+        const saveText = document.getElementById('saveText');
+        const charCount = document.getElementById('charCount');
+        let saveTimer;
+
+        // Load draft
+        area.value = localStorage.getItem('ventDraft') || '';
+        updateWordCount();
+        if (area.value) {
+            saveDot.className = 'save-dot saved';
+            saveText.textContent = 'draft saved';
+        }
+
+        // Autosave draft as they type
+        area.addEventListener('input', () => {
+            updateWordCount();
+            saveDot.className = 'save-dot';
+            saveText.textContent = 'saving...';
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => {
+                localStorage.setItem('ventDraft', area.value);
+                saveDot.className = 'save-dot saved';
+                saveText.textContent = 'draft saved';
+            }, 800);
+        });
+
+        function updateWordCount() {
+            const words = area.value.trim() === '' ? 0 : area.value.trim().split(/\s+/).length;
+            charCount.textContent = words + (words === 1 ? ' word' : ' words');
+        }
+
+        function clearVent() {
+            if (confirm('Clear your draft?')) {
+                area.value = '';
+                localStorage.removeItem('ventDraft');
+                saveDot.className = 'save-dot';
+                saveText.textContent = 'cleared';
+                updateWordCount();
+            }
+        }
+
+        function sendVent() {
+            if (!area.value.trim()) {
+                area.placeholder = "write something first 🤍";
+                area.focus();
+                return;
+            }
+
+            const btn = document.getElementById('sendBtn');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    'form-name': 'vent-thoughts',
+                    'message': area.value
+                }).toString()
+            })
+            .then(() => {
+                localStorage.removeItem('ventDraft');
+                document.getElementById('writeView').style.display = 'none';
+                document.getElementById('successView').classList.add('show');
+            })
+            .catch(() => {
+                btn.disabled = false;
+                btn.textContent = 'Send 💌';
+                alert('Something went wrong, try again 🤍');
+            });
+        }
+
+        function writeAgain() {
+            area.value = '';
+            updateWordCount();
+            saveDot.className = 'save-dot';
+            saveText.textContent = 'draft saved';
+            document.getElementById('successView').classList.remove('show');
+            document.getElementById('writeView').style.display = 'block';
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('sendBtn').textContent = 'Send 💌';
+        }
+    </script>
+
+</body>
+</html>
