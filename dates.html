@@ -214,61 +214,66 @@
             document.getElementById('btnHer').className = 'who-btn' + (who === 'her' ? ' active-her' : '');
         }
 
-        function load() { return JSON.parse(localStorage.getItem('dateIdeas2') || '[]'); }
-        function save(d) { localStorage.setItem('dateIdeas2', JSON.stringify(d)); }
+        // ── Firebase sync ──
+        let _db, _ideas = [];
 
-        function addIdea() {
-            const text = document.getElementById('ideaInput').value.trim();
-            if (!text) { document.getElementById('ideaInput').focus(); return; }
-            const data = load();
-            data.unshift({ text, emoji: selectedEmoji, who: selectedWho, done: false, id: Date.now() });
-            save(data);
-            document.getElementById('ideaInput').value = '';
-            render();
-        }
+        (async () => {
+            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+            const { getDatabase, ref, set, onValue } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
+            _db = getDatabase(initializeApp({
+                apiKey: "AIzaSyBPMzMNVpGsHhouPGjlSREFgm5ijyhgj6M",
+                authDomain: "foryara-cce24.firebaseapp.com",
+                databaseURL: "https://foryara-cce24-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "foryara-cce24",
+                storageBucket: "foryara-cce24.firebasestorage.app",
+                messagingSenderId: "1051054844072",
+                appId: "1:1051054844072:web:1dd1e21e810c93a04d3a9d"
+            }));
+            onValue(ref(_db, 'dateIdeas'), snap => {
+                const val = snap.val();
+                _ideas = val ? Object.values(val).sort((a,b) => b.id - a.id) : [];
+                render();
+            });
+            addIdea = () => {
+                const text = document.getElementById('ideaInput').value.trim();
+                if (!text) { document.getElementById('ideaInput').focus(); return; }
+                const id = Date.now();
+                const { ref: r, set: s } = { ref, set };
+                set(ref(_db, 'dateIdeas/' + id), { text, emoji: selectedEmoji, who: selectedWho, done: false, id });
+                document.getElementById('ideaInput').value = '';
+            };
+            toggleDone = id => {
+                const item = _ideas.find(d => d.id === id);
+                if (item) set(ref(_db, 'dateIdeas/' + id), { ...item, done: !item.done });
+            };
+            deleteIdea = id => {
+                const { ref: r, remove } = { ref, remove: (ref) => set(ref, null) };
+                set(ref(_db, 'dateIdeas/' + id), null);
+            };
+        })();
 
-        function toggleDone(id) {
-            const data = load();
-            const item = data.find(d => d.id === id);
-            if (item) { item.done = !item.done; save(data); render(); }
-        }
-
-        function deleteIdea(id) {
-            const data = load().filter(d => d.id !== id);
-            save(data);
-            render();
-        }
+        let addIdea   = () => {};
+        let toggleDone = () => {};
+        let deleteIdea = () => {};
 
         function render() {
-            const data = load();
-            const list = document.getElementById('ideasList');
             const count = document.getElementById('ideasCount');
-
-            count.textContent = data.length === 1 ? '1 idea' : data.length + ' ideas';
-
-            if (data.length === 0) {
-                list.innerHTML = '<div class="empty-msg">no ideas yet — add the first one! 💛</div>';
-                return;
-            }
-
-            const whoLabel = { him: 'his idea 💛', her: 'her idea 🤍', both: 'both 💛🤍' };
-            const whoClass = { him: 'who-him', her: 'who-her', both: 'who-both' };
-
-            list.innerHTML = data.map(d => `
+            const list  = document.getElementById('ideasList');
+            count.textContent = _ideas.length === 1 ? '1 idea' : _ideas.length + ' ideas';
+            if (_ideas.length === 0) { list.innerHTML = '<div class="empty-msg">no ideas yet — add the first one! 💛</div>'; return; }
+            const whoLabel = { him:'his idea 💛', her:'her idea 🤍', both:'both 💛🤍' };
+            const whoClass = { him:'who-him', her:'who-her', both:'who-both' };
+            list.innerHTML = _ideas.map(d => `
                 <div class="idea-item">
-                    <span class="idea-item-emoji">${d.emoji || '🌟'}</span>
+                    <span class="idea-item-emoji">${d.emoji||'🌟'}</span>
                     <div class="idea-item-body">
-                        <div class="idea-item-text ${d.done ? 'done-text' : ''}">${d.text}</div>
-                        <div class="idea-item-who ${whoClass[d.who] || 'who-him'}">${whoLabel[d.who] || 'his idea 💛'}</div>
+                        <div class="idea-item-text ${d.done?'done-text':''}">${d.text}</div>
+                        <div class="idea-item-who ${whoClass[d.who]||'who-him'}">${whoLabel[d.who]||'his idea 💛'}</div>
                     </div>
-                    <button class="idea-done-btn ${d.done ? 'done' : ''}" onclick="toggleDone(${d.id})" title="${d.done ? 'undo' : 'mark done'}">
-                        ${d.done ? '✓' : ''}
-                    </button>
+                    <button class="idea-done-btn ${d.done?'done':''}" onclick="toggleDone(${d.id})">${d.done?'✓':''}</button>
                     <button class="idea-del-btn" onclick="deleteIdea(${d.id})">✕</button>
-                </div>
-            `).join('');
+                </div>`).join('');
         }
-
         render();
     </script>
 </body>

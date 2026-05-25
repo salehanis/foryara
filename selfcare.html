@@ -110,7 +110,20 @@
         </div>
     </section>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const db = getDatabase(initializeApp({
+            apiKey: "AIzaSyBPMzMNVpGsHhouPGjlSREFgm5ijyhgj6M",
+            authDomain: "foryara-cce24.firebaseapp.com",
+            databaseURL: "https://foryara-cce24-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "foryara-cce24",
+            storageBucket: "foryara-cce24.firebasestorage.app",
+            messagingSenderId: "1051054844072",
+            appId: "1:1051054844072:web:1dd1e21e810c93a04d3a9d"
+        }));
+
         const items = [
             { key:'eaten',    emoji:'🍽️', label:'Have you eaten today?' },
             { key:'water',    emoji:'💧', label:'Have you drunk enough water?' },
@@ -123,56 +136,35 @@
         ];
 
         const CIRC = 2 * Math.PI * 22;
+        const todayKey = () => new Date().toISOString().slice(0,10);
 
-        function getTodayKey() { return 'care_' + new Date().toISOString().slice(0,10); }
+        let _data = {};
 
-        function loadChecks() {
-            const saved = JSON.parse(localStorage.getItem(getTodayKey()) || '{}');
-            // Clear old keys
-            Object.keys(localStorage).forEach(k => { if (k.startsWith('care_') && k !== getTodayKey()) localStorage.removeItem(k); });
-            return saved;
-        }
-
-        function saveChecks(data) { localStorage.setItem(getTodayKey(), JSON.stringify(data)); }
+        onValue(ref(db, 'selfcare/' + todayKey()), snap => {
+            _data = snap.val() || {};
+            render();
+        });
 
         function render() {
-            const data = loadChecks();
-            const done = Object.values(data).filter(Boolean).length;
+            const done  = Object.values(_data).filter(Boolean).length;
             const total = items.length;
-            const pct = done / total;
-
             document.getElementById('progressText').textContent = done + '/' + total;
-            document.getElementById('ringFill').style.strokeDashoffset = CIRC * (1 - pct);
-
-            const list = document.getElementById('checkList');
-            list.innerHTML = items.map(it => `
-                <div class="check-item ${data[it.key] ? 'done' : ''}" onclick="toggle('${it.key}')">
-                    <div class="custom-check">${data[it.key] ? '✓' : ''}</div>
+            document.getElementById('ringFill').style.strokeDashoffset = CIRC * (1 - done/total);
+            document.getElementById('checkList').innerHTML = items.map(it => `
+                <div class="check-item ${_data[it.key] ? 'done' : ''}" onclick="toggle('${it.key}')">
+                    <div class="custom-check">${_data[it.key] ? '✓' : ''}</div>
                     <span class="check-emoji">${it.emoji}</span>
                     <span class="check-label">${it.label}</span>
-                </div>
-            `).join('');
-
-            if (done === total) {
-                document.getElementById('allDone').classList.add('show');
-            } else {
-                document.getElementById('allDone').classList.remove('show');
-            }
+                </div>`).join('');
+            document.getElementById('allDone').classList.toggle('show', done === total);
         }
 
-        function toggle(key) {
-            const data = loadChecks();
-            data[key] = !data[key];
-            saveChecks(data);
-            render();
-        }
+        window.toggle = key => {
+            _data[key] = !_data[key];
+            set(ref(db, 'selfcare/' + todayKey()), _data);
+        };
 
-        function resetChecks() {
-            localStorage.removeItem(getTodayKey());
-            render();
-        }
-
-        render();
+        window.resetChecks = () => set(ref(db, 'selfcare/' + todayKey()), {});
     </script>
 </body>
 </html>

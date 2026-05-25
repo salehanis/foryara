@@ -289,74 +289,68 @@
             { key: 'bored',       emoji: '😑', label: 'Bored'       },
         ];
 
-        function loadData() {
-            return JSON.parse(localStorage.getItem('emotionLog') || '{}');
-        }
+        // ── Firebase sync ──
+        let _counts = {}, _lastTime = null, _lastLabel = null;
 
-        function saveData(data) {
-            localStorage.setItem('emotionLog', JSON.stringify(data));
-        }
+        (async () => {
+            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+            const { getDatabase, ref, set, onValue } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
+            const db = getDatabase(initializeApp({
+                apiKey: "AIzaSyBPMzMNVpGsHhouPGjlSREFgm5ijyhgj6M",
+                authDomain: "foryara-cce24.firebaseapp.com",
+                databaseURL: "https://foryara-cce24-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "foryara-cce24",
+                storageBucket: "foryara-cce24.firebasestorage.app",
+                messagingSenderId: "1051054844072",
+                appId: "1:1051054844072:web:1dd1e21e810c93a04d3a9d"
+            }));
 
-        function getTotal(data) {
-            return Object.values(data).reduce((a, b) => a + b, 0);
-        }
+            onValue(ref(db, 'emotionLog'), snap => {
+                const d = snap.val() || {};
+                _counts    = d.counts    || {};
+                _lastTime  = d.lastTime  || null;
+                _lastLabel = d.lastLabel || null;
+                render();
+            });
+
+            logEmotion = (key, label) => {
+                _counts[key] = (_counts[key] || 0) + 1;
+                set(ref(db, 'emotionLog'), { counts: _counts, lastTime: new Date().toISOString(), lastLabel: label });
+                const btn = document.getElementById('btn-' + key);
+                btn.classList.remove('popped'); void btn.offsetWidth; btn.classList.add('popped');
+            };
+
+            resetAll = () => {
+                if (confirm('Reset all emotion logs?'))
+                    set(ref(db, 'emotionLog'), { counts: {}, lastTime: null, lastLabel: null });
+            };
+        })();
+
+        let logEmotion = () => {};
+        let resetAll   = () => {};
+
+        function getTotal(data) { return Object.values(data).reduce((a,b) => a+b, 0); }
 
         function render() {
-            const data = loadData();
-            const total = getTotal(data);
-            const list = document.getElementById('emotionsList');
-
+            const total = getTotal(_counts);
             document.getElementById('totalLogs').textContent = total + (total === 1 ? ' log' : ' logs');
-
-            const lastRaw = localStorage.getItem('lastEmotionTime');
-            const lastLabel = localStorage.getItem('lastEmotionLabel');
-            if (lastRaw && lastLabel) {
-                const d = new Date(lastRaw);
+            if (_lastTime && _lastLabel) {
+                const d = new Date(_lastTime);
                 document.getElementById('lastLogged').textContent =
-                    `last: ${lastLabel} at ${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+                    `last: ${_lastLabel} at ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
             }
-
-            list.innerHTML = emotions.map(e => {
-                const count = data[e.key] || 0;
-                const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-                return `
-                    <div class="emotion-row">
-                        <span class="row-emoji">${e.emoji}</span>
-                        <span class="row-name">${e.label}</span>
-                        <div class="bar-wrap">
-                            <div class="bar-fill bar-${e.key}" id="bar-${e.key}" style="width:${pct}%"></div>
-                        </div>
-                        <span class="row-percent" id="pct-${e.key}">${pct}%</span>
-                        <span class="row-count" id="cnt-${e.key}">${count}</span>
-                        <button class="log-btn" id="btn-${e.key}" onclick="logEmotion('${e.key}','${e.label}')">+</button>
-                    </div>
-                `;
+            document.getElementById('emotionsList').innerHTML = emotions.map(e => {
+                const count = _counts[e.key] || 0;
+                const pct   = total > 0 ? Math.round((count / total) * 100) : 0;
+                return `<div class="emotion-row">
+                    <span class="row-emoji">${e.emoji}</span>
+                    <span class="row-name">${e.label}</span>
+                    <div class="bar-wrap"><div class="bar-fill bar-${e.key}" style="width:${pct}%"></div></div>
+                    <span class="row-percent">${pct}%</span>
+                    <span class="row-count">${count}</span>
+                    <button class="log-btn" id="btn-${e.key}" onclick="logEmotion('${e.key}','${e.label}')">+</button>
+                </div>`;
             }).join('');
-        }
-
-        function logEmotion(key, label) {
-            const data = loadData();
-            data[key] = (data[key] || 0) + 1;
-            saveData(data);
-            localStorage.setItem('lastEmotionTime', new Date().toISOString());
-            localStorage.setItem('lastEmotionLabel', label);
-
-            // Pop animation
-            const btn = document.getElementById('btn-' + key);
-            btn.classList.remove('popped');
-            void btn.offsetWidth;
-            btn.classList.add('popped');
-
-            render();
-        }
-
-        function resetAll() {
-            if (confirm('Reset all emotion logs?')) {
-                localStorage.removeItem('emotionLog');
-                localStorage.removeItem('lastEmotionTime');
-                localStorage.removeItem('lastEmotionLabel');
-                render();
-            }
         }
 
         render();
