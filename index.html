@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How Are You Feeling?</title>
+    <title>For Yara 💛</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/foryara/manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="apple-touch-icon" href="/foryara/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="For Yara">
+
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&family=Boogaloo&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -232,6 +241,31 @@
     </main>
 
     <div class="rainbow-bar"></div>
+
+    <!-- iOS install hint (shows once) -->
+    <div id="iosHint" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:90%; max-width:360px; background:rgba(255,254,242,.95); backdrop-filter:blur(12px); border:4px solid #222; border-radius:22px; box-shadow:6px 6px 0 #222; padding:16px 20px; z-index:9999; animation:notePop .4s ease both;">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <span style="font-size:2rem;">📲</span>
+            <div style="flex:1;">
+                <div style="font-family:'Fredoka One',cursive; font-size:1rem; color:#333;">add to home screen</div>
+                <div style="font-family:'Nunito',sans-serif; font-size:.8rem; font-weight:700; color:#888; margin-top:2px;">tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong> 💛</div>
+            </div>
+            <button onclick="document.getElementById('iosHint').style.display='none'; localStorage.setItem('iosHintDone','1');" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#bbb; padding:4px;">✕</button>
+        </div>
+    </div>
+
+    <script>
+        // Service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/foryara/sw.js');
+        }
+        // Show iOS install hint once
+        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        const isStandalone = window.navigator.standalone;
+        if (isIOS && !isStandalone && !localStorage.getItem('iosHintDone')) {
+            setTimeout(() => { document.getElementById('iosHint').style.display = 'block'; }, 2000);
+        }
+    </script>
 
 </body>
 </html>

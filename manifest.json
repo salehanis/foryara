@@ -1,0 +1,16 @@
+{
+  "name": "For Yara 💛",
+  "short_name": "For Yara",
+  "description": "just for us 💛",
+  "start_url": "/foryara/",
+  "scope": "/foryara/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    { "src": "/foryara/icon-192.png",        "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/foryara/icon-512.png",        "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/foryara/apple-touch-icon.png","sizes": "180x180", "type": "image/png" }
+  ]
+}
