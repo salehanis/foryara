@@ -75,7 +75,7 @@
             <div class="edit-section">
                 <label class="edit-label">the day we met:</label>
                 <input type="date" class="date-input" id="metDateInput">
-                <button class="save-date-btn" onclick="saveMetDate()">save 💛</button>
+                <button class="save-date-btn" id="saveMetBtn" onclick="saveMetDate()">save 💛</button>
             </div>
         </div>
 
@@ -90,7 +90,7 @@
             <div class="edit-section">
                 <label class="edit-label">next time we meet:</label>
                 <input type="date" class="date-input" id="nextMeetInput">
-                <button class="save-date-btn" onclick="saveNextMeet()">save 💛</button>
+                <button class="save-date-btn" id="saveNextBtn" onclick="saveNextMeet()">save 💛</button>
             </div>
         </div>
 
@@ -139,13 +139,29 @@
             }
         });
 
+        function flashBtn(id, ok) {
+            const b = document.getElementById(id);
+            b.textContent = ok ? 'saved! ✓' : 'failed ✗';
+            b.style.background = ok ? 'linear-gradient(135deg,#34d399,#059669)' : 'linear-gradient(135deg,#f87171,#dc2626)';
+            setTimeout(() => {
+                b.textContent = 'save 💛';
+                b.style.background = 'linear-gradient(135deg,#a78bfa,#7c3aed)';
+            }, 2000);
+        }
+
         window.saveMetDate = () => {
             const val = document.getElementById('metDateInput').value;
-            if (val) set(ref(db, 'countdown/metDate'), val);
+            if (!val) return;
+            set(ref(db, 'countdown/metDate'), val)
+                .then(() => flashBtn('saveMetBtn', true))
+                .catch(err => { console.error(err); flashBtn('saveMetBtn', false); });
         };
         window.saveNextMeet = () => {
             const val = document.getElementById('nextMeetInput').value;
-            if (val) set(ref(db, 'countdown/nextMeetDate'), val);
+            if (!val) return;
+            set(ref(db, 'countdown/nextMeetDate'), val)
+                .then(() => flashBtn('saveNextBtn', true))
+                .catch(err => { console.error(err); flashBtn('saveNextBtn', false); });
         };
     </script>
 </body>
