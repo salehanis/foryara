@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Once a Month 🌸</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .period-page { min-height:100vh; background:url('bg.gif') center/contain no-repeat; background-color:#1a1a2e; display:flex; flex-direction:column; align-items:center; }
+        .period-header { text-align:center; padding:10px 20px 16px; }
+        .period-icon { font-size:4.5rem; display:block; animation:bigBounce 2s ease-in-out infinite; margin-bottom:8px; }
+        .period-title { font-size:2.6rem; color:white; text-shadow:4px 4px 0 rgba(0,0,0,.5),-2px -2px 0 rgba(0,0,0,.28); letter-spacing:2px; }
+        .period-sub { font-family:'Nunito',sans-serif; font-size:.95rem; color:rgba(255,255,255,.8); font-weight:700; margin-top:6px; }
+
+        .who-toggle { display:flex; gap:12px; margin:4px 0 20px; position:relative; z-index:1; }
+        .who-opt { font-family:'Fredoka One',cursive; font-size:1.1rem; padding:10px 28px; border-radius:50px; border:3px solid rgba(255,255,255,.35); background:rgba(255,255,255,.1); color:rgba(255,255,255,.55); cursor:pointer; transition:all .2s; backdrop-filter:blur(4px); }
+        .him-active { background:#a78bfa !important; border-color:#7c3aed !important; color:white !important; box-shadow:4px 4px 0 #4c1d95 !important; }
+        .her-active { background:#f9a8d4 !important; border-color:#db2777 !important; color:#831843 !important; box-shadow:4px 4px 0 #9d174d !important; }
+
+        .period-section { width:100%; max-width:720px; padding:0 25px 60px; display:flex; flex-direction:column; gap:20px; }
+
+        .p-card { background:rgba(255,254,242,.65); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:5px solid #222; border-radius:30px; box-shadow:8px 8px 0 #222; padding:28px 30px; animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) both; }
+        .p-card-title { font-family:'Fredoka One',cursive; font-size:1.5rem; color:#333; margin-bottom:18px; padding-bottom:14px; border-bottom:3px dashed #ddd; }
+
+        .p-textarea { width:100%; min-height:140px; border:3px solid #ddd; border-radius:16px; padding:14px 16px; font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700; color:#444; background:rgba(255,255,255,.7); outline:none; resize:none; line-height:1.7; transition:border .2s; box-sizing:border-box; }
+        .p-textarea:focus { border-color:#f9a8d4; }
+        .p-textarea::placeholder { color:#bbb; font-weight:600; }
+
+        .pain-section { margin:20px 0 16px; }
+        .pain-label-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+        .pain-label { font-family:'Nunito',sans-serif; font-size:.82rem; font-weight:900; color:#999; letter-spacing:1px; text-transform:uppercase; }
+        .pain-display { font-family:'Fredoka One',cursive; font-size:1.2rem; color:#444; display:flex; align-items:center; gap:6px; }
+        .pain-desc-sm { font-family:'Nunito',sans-serif; font-size:.8rem; font-weight:700; color:#bbb; }
+
+        .pain-slider { -webkit-appearance:none; appearance:none; width:100%; height:12px; border-radius:6px; outline:none; border:2px solid #ddd; cursor:pointer; transition:background .1s; }
+        .pain-slider::-webkit-slider-thumb { -webkit-appearance:none; width:28px; height:28px; border-radius:50%; background:white; border:3px solid #222; cursor:pointer; box-shadow:2px 2px 0 rgba(0,0,0,.15); }
+
+        .symptoms-section { margin:4px 0 20px; }
+        .symptoms-label { font-family:'Nunito',sans-serif; font-size:.82rem; font-weight:900; color:#999; letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; display:block; }
+        .symptoms-grid { display:flex; flex-wrap:wrap; gap:8px; }
+        .symptom-chip { font-family:'Nunito',sans-serif; font-size:.88rem; font-weight:700; padding:8px 14px; border-radius:50px; border:3px solid #ddd; background:rgba(255,255,255,.5); color:#777; cursor:pointer; transition:all .15s; user-select:none; }
+        .symptom-chip.selected { background:#f9a8d4; border-color:#db2777; color:#831843; }
+
+        .p-submit-btn { width:100%; margin-top:18px; font-family:'Fredoka One',cursive; font-size:1.2rem; color:white; background:linear-gradient(135deg,#f9a8d4,#ec4899); border:4px solid #222; border-radius:50px; padding:14px; cursor:pointer; box-shadow:5px 5px 0 #222; transition:all .2s; letter-spacing:1px; }
+        .p-submit-btn:hover { transform:translateY(-3px); box-shadow:7px 8px 0 #222; }
+        .p-submit-btn:active { transform:translateY(2px); box-shadow:2px 2px 0 #222; }
+        .p-submit-btn:disabled { opacity:.6; cursor:not-allowed; transform:none !important; box-shadow:5px 5px 0 #222 !important; }
+
+        .entry-month { font-family:'Nunito',sans-serif; font-size:.78rem; font-weight:900; color:#db2777; letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; }
+
+        .pain-bar-wrap { margin:14px 0 8px; }
+        .pain-bar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+        .pain-bar-label-text { font-family:'Nunito',sans-serif; font-size:.8rem; font-weight:900; color:#bbb; letter-spacing:1px; text-transform:uppercase; }
+        .pain-bar-pct { font-family:'Fredoka One',cursive; font-size:1.4rem; color:#333; }
+        .pain-bar-track { width:100%; height:14px; background:#f0f0f0; border-radius:7px; border:2px solid #e0e0e0; overflow:hidden; }
+        .pain-bar-fill { height:100%; border-radius:7px; transition:width .8s ease; }
+        .pain-bar-sublabel { font-family:'Nunito',sans-serif; font-size:.78rem; font-weight:700; color:#bbb; margin-top:5px; }
+
+        .her-message { font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700; color:#555; line-height:1.7; margin:16px 0; padding:16px; background:rgba(249,168,212,.12); border-radius:16px; border-left:4px solid #f9a8d4; }
+
+        .symptom-tags { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 14px; }
+        .symptom-tag { font-family:'Nunito',sans-serif; font-size:.8rem; font-weight:700; padding:5px 12px; border-radius:50px; background:rgba(249,168,212,.2); border:2px solid #f9a8d4; color:#9d174d; }
+
+        .divider-dash { border:none; border-top:3px dashed #ddd; margin:20px 0 16px; }
+        .from-him-label { font-family:'Fredoka One',cursive; font-size:1.1rem; color:#777; margin-bottom:12px; }
+        .his-reply-bubble { background:rgba(167,139,250,.14); border-radius:16px; border-left:4px solid #a78bfa; padding:14px 16px; font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700; color:#4c1d95; line-height:1.7; }
+        .no-reply-text { font-family:'Nunito',sans-serif; font-size:.9rem; font-weight:700; color:#ccc; text-align:center; padding:12px 0; }
+        .reply-ts { font-family:'Nunito',sans-serif; font-size:.72rem; font-weight:700; color:#bbb; text-align:right; margin-top:6px; }
+
+        .reply-submit-btn { width:100%; margin-top:12px; font-family:'Fredoka One',cursive; font-size:1.1rem; color:white; background:linear-gradient(135deg,#a78bfa,#7c3aed); border:4px solid #222; border-radius:50px; padding:12px; cursor:pointer; box-shadow:5px 5px 0 #222; transition:all .2s; }
+        .reply-submit-btn:hover { transform:translateY(-3px); box-shadow:7px 8px 0 #222; }
+        .reply-submit-btn:active { transform:translateY(2px); box-shadow:2px 2px 0 #222; }
+        .reply-submit-btn:disabled { opacity:.6; cursor:not-allowed; transform:none !important; }
+
+        .history-label { font-family:'Fredoka One',cursive; font-size:.95rem; color:rgba(255,255,255,.55); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+        .h-item { background:rgba(255,254,242,.45); backdrop-filter:blur(6px); border:3px solid rgba(255,255,255,.2); border-radius:18px; padding:14px 18px; cursor:pointer; transition:background .15s; }
+        .h-item:hover { background:rgba(255,254,242,.6); }
+        .h-item-top { display:flex; justify-content:space-between; align-items:center; }
+        .h-month { font-family:'Fredoka One',cursive; font-size:1rem; color:#444; }
+        .h-stats { font-family:'Nunito',sans-serif; font-size:.8rem; font-weight:900; color:#aaa; }
+        .h-body { display:none; margin-top:12px; padding-top:12px; border-top:2px dashed #ddd; }
+        .h-item.h-open .h-body { display:block; }
+        .h-feeling { font-family:'Nunito',sans-serif; font-size:.9rem; font-weight:700; color:#666; line-height:1.6; margin:8px 0; }
+        .h-reply { background:rgba(167,139,250,.1); border-radius:12px; border-left:3px solid #a78bfa; padding:10px 12px; font-family:'Nunito',sans-serif; font-size:.88rem; font-weight:700; color:#6d28d9; line-height:1.6; margin-top:10px; }
+    </style>
+</head>
+<body class="period-page">
+    <div class="rainbow-bar"></div>
+    <nav class="emotion-nav"><a href="index.html" class="back-btn">← Back</a></nav>
+
+    <div class="period-header">
+        <span class="period-icon">🌸</span>
+        <h1 class="period-title">Once a Month</h1>
+        <p class="period-sub">just between us 💛</p>
+    </div>
+
+    <div class="who-toggle">
+        <button id="btnHim" class="who-opt" onclick="setWho('him')">💛 him</button>
+        <button id="btnHer" class="who-opt" onclick="setWho('her')">🌸 her</button>
+    </div>
+
+    <section class="period-section">
+        <div id="mainContent">
+            <div class="p-card" style="text-align:center;padding:50px 30px;">
+                <span style="font-size:3rem">🌸</span>
+                <p style="font-family:'Nunito',sans-serif;font-weight:700;color:#aaa;margin-top:14px;">connecting...</p>
+            </div>
+        </div>
+    </section>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // ── FIREBASE CONFIG (filled in after setup) ──
+        const firebaseConfig = {
+            apiKey: "PLACEHOLDER",
+            authDomain: "PLACEHOLDER",
+            databaseURL: "PLACEHOLDER",
+            projectId: "PLACEHOLDER",
+            storageBucket: "PLACEHOLDER",
+            messagingSenderId: "PLACEHOLDER",
+            appId: "PLACEHOLDER"
+        };
+
+        if (firebaseConfig.apiKey === "PLACEHOLDER") {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="p-card" style="text-align:center;padding:50px 30px;">
+                    <span style="font-size:3rem">🔧</span>
+                    <div style="font-family:'Fredoka One',cursive;font-size:1.3rem;color:#555;margin-top:14px;">almost ready</div>
+                    <div style="font-family:'Nunito',sans-serif;font-weight:700;color:#aaa;margin-top:8px;font-size:.9rem;">setting up the connection 💛</div>
+                </div>`;
+            document.getElementById('btnHim').className = 'who-opt him-active';
+        } else {
+
+        const app = initializeApp(firebaseConfig);
+        const db  = getDatabase(app);
+
+        const SYMPTOMS = [
+            { key:'cramps',   label:'😣 cramps' },
+            { key:'headache', label:'🤕 headache' },
+            { key:'mood',     label:'😤 mood swings' },
+            { key:'tired',    label:'😴 tired' },
+            { key:'bloated',  label:'🫧 bloated' },
+            { key:'backpain', label:'😖 back pain' },
+            { key:'nausea',   label:'🤢 nausea' },
+            { key:'sleep',    label:"💤 can't sleep" },
+        ];
+
+        let who = localStorage.getItem('periodWho') || 'him';
+        let selectedSymptoms = [];
+        let currentData = {};
+
+        const monthKey  = () => { const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`; };
+        const fmtMonth  = k  => { const [y,m]=k.split('-').map(Number); return ['January','February','March','April','May','June','July','August','September','October','November','December'][m-1]+' '+y; };
+        const painEmoji = v  => v<=20?'😊':v<=40?'😐':v<=60?'😣':v<=80?'😫':'💔';
+        const painColor = v  => v<=20?'#4ade80':v<=40?'#a3e635':v<=60?'#facc15':v<=80?'#fb923c':'#ef4444';
+        const painLabel = v  => v<=20?'not too bad 🌿':v<=40?'a little rough':v<=60?'pretty bad':v<=80?'really tough 😫':'the worst 💔';
+        const fmtDate   = ts => new Date(ts).toLocaleDateString('en-GB',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+
+        // ── who toggle ──
+        window.setWho = w => {
+            who = w;
+            localStorage.setItem('periodWho', w);
+            document.getElementById('btnHim').className = 'who-opt'+(w==='him'?' him-active':'');
+            document.getElementById('btnHer').className = 'who-opt'+(w==='her'?' her-active':'');
+            render(currentData);
+        };
+        document.getElementById('btnHim').className = 'who-opt'+(who==='him'?' him-active':'');
+        document.getElementById('btnHer').className = 'who-opt'+(who==='her'?' her-active':'');
+
+        // ── render ──
+        function render(data) {
+            currentData = data || {};
+            const mk    = monthKey();
+            const entry = currentData[mk];
+            const past  = Object.keys(currentData).filter(k=>k!==mk).sort().reverse();
+
+            let html = '';
+
+            if (!entry && who === 'her') {
+                html += logFormHTML();
+            } else if (!entry) {
+                html += `<div class="p-card" style="text-align:center;padding:44px 30px;">
+                    <span style="font-size:3rem">🌸</span>
+                    <div style="font-family:'Fredoka One',cursive;font-size:1.4rem;color:#555;margin-top:12px;">nothing yet this month</div>
+                    <div style="font-family:'Nunito',sans-serif;font-weight:700;color:#bbb;margin-top:8px;font-size:.9rem;">she hasn't logged yet 💛</div>
+                </div>`;
+            } else {
+                html += entryHTML(mk, entry);
+            }
+
+            if (past.length) {
+                html += `<div class="history-label">past months 📅</div>`;
+                past.forEach(k => { html += historyItemHTML(k, currentData[k]); });
+            }
+
+            document.getElementById('mainContent').innerHTML = html;
+
+            const slider = document.getElementById('painSlider');
+            if (slider) { slider.addEventListener('input', onSlider); onSlider.call(slider); }
+        }
+
+        function logFormHTML() {
+            return `<div class="p-card">
+                <div class="p-card-title">how are you feeling? 🌸</div>
+                <textarea class="p-textarea" id="feelingText" placeholder="write anything... physically, emotionally, all of it 🤍"></textarea>
+                <div class="pain-section">
+                    <div class="pain-label-row">
+                        <span class="pain-label">pain level</span>
+                        <span class="pain-display">
+                            <span id="painEmoji">😐</span>
+                            <span id="painPct">40%</span>
+                            <span class="pain-desc-sm">— <span id="painDesc">a little rough</span></span>
+                        </span>
+                    </div>
+                    <input type="range" class="pain-slider" id="painSlider" min="0" max="100" value="40">
+                </div>
+                <div class="symptoms-section">
+                    <span class="symptoms-label">what's going on?</span>
+                    <div class="symptoms-grid">
+                        ${SYMPTOMS.map(s=>`<div class="symptom-chip" data-key="${s.key}" onclick="toggleSymptom('${s.key}')">${s.label}</div>`).join('')}
+                    </div>
+                </div>
+                <button class="p-submit-btn" id="submitEntryBtn" onclick="submitEntry()">log it 🌸</button>
+            </div>`;
+        }
+
+        function entryHTML(mk, entry) {
+            const pv   = entry.painLevel || 0;
+            const syms = entry.symptoms  || [];
+            return `<div class="p-card">
+                <div class="entry-month">🌸 ${fmtMonth(mk)}</div>
+                <div class="pain-bar-wrap">
+                    <div class="pain-bar-header">
+                        <span class="pain-bar-label-text">pain level</span>
+                        <span class="pain-bar-pct">${painEmoji(pv)} ${pv}%</span>
+                    </div>
+                    <div class="pain-bar-track"><div class="pain-bar-fill" style="width:${pv}%;background:${painColor(pv)};"></div></div>
+                    <div class="pain-bar-sublabel">${painLabel(pv)}</div>
+                </div>
+                ${syms.length ? `<div class="symptom-tags">${syms.map(s=>{const sym=SYMPTOMS.find(x=>x.key===s);return`<span class="symptom-tag">${sym?sym.label:s}</span>`;}).join('')}</div>` : ''}
+                <div class="her-message">"${entry.feeling}"</div>
+                <hr class="divider-dash">
+                <div class="from-him-label">💛 from him</div>
+                ${entry.reply
+                    ? `<div class="his-reply-bubble">${entry.reply}</div><div class="reply-ts">${fmtDate(entry.replyTimestamp)}</div>`
+                    : `<div class="no-reply-text">no reply yet 💛</div>`
+                }
+                ${who==='him' ? `
+                <div style="margin-top:22px;">
+                    <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#666;margin-bottom:10px;">write back to her 💛</div>
+                    <textarea class="p-textarea" id="replyText" placeholder="ya albee entii..." style="min-height:100px;">${entry.reply||''}</textarea>
+                    <button class="reply-submit-btn" id="replyBtn" onclick="submitReply('${mk}')">send 💛</button>
+                </div>` : ''}
+            </div>`;
+        }
+
+        function historyItemHTML(k, entry) {
+            const pv = entry.painLevel || 0;
+            return `<div class="h-item" onclick="this.classList.toggle('h-open')">
+                <div class="h-item-top">
+                    <span class="h-month">🌸 ${fmtMonth(k)}</span>
+                    <span class="h-stats">${painEmoji(pv)} ${pv}% ${entry.reply?'· 💛':''}</span>
+                </div>
+                <div class="h-body">
+                    <div class="pain-bar-track" style="margin-bottom:10px;"><div class="pain-bar-fill" style="width:${pv}%;background:${painColor(pv)};"></div></div>
+                    <div class="h-feeling">"${entry.feeling}"</div>
+                    ${entry.reply?`<div class="h-reply">${entry.reply}</div>`:''}
+                </div>
+            </div>`;
+        }
+
+        // ── pain slider ──
+        function onSlider() {
+            const v = parseInt(this.value);
+            const c = painColor(v);
+            this.style.background = `linear-gradient(90deg, ${c} ${v}%, #e5e7eb ${v}%)`;
+            document.getElementById('painEmoji').textContent = painEmoji(v);
+            document.getElementById('painPct').textContent   = v+'%';
+            document.getElementById('painDesc').textContent  = painLabel(v);
+        }
+
+        // ── symptoms ──
+        window.toggleSymptom = key => {
+            const chip = document.querySelector(`.symptom-chip[data-key="${key}"]`);
+            if (selectedSymptoms.includes(key)) {
+                selectedSymptoms = selectedSymptoms.filter(s=>s!==key);
+                chip.classList.remove('selected');
+            } else {
+                selectedSymptoms.push(key);
+                chip.classList.add('selected');
+            }
+        };
+
+        // ── submit entry ──
+        window.submitEntry = async () => {
+            const feeling = document.getElementById('feelingText').value.trim();
+            const pv      = parseInt(document.getElementById('painSlider').value);
+            if (!feeling) { document.getElementById('feelingText').focus(); return; }
+            const btn = document.getElementById('submitEntryBtn');
+            btn.disabled = true; btn.textContent = 'saving... 🌸';
+            const mk       = monthKey();
+            const existing = currentData[mk] || {};
+            await set(ref(db, `periods/${mk}`), {
+                feeling, painLevel: pv, symptoms: [...selectedSymptoms],
+                timestamp: Date.now(),
+                reply: existing.reply || null,
+                replyTimestamp: existing.replyTimestamp || null,
+            });
+            selectedSymptoms = [];
+        };
+
+        // ── submit reply ──
+        window.submitReply = async mk => {
+            const txt = document.getElementById('replyText').value.trim();
+            if (!txt) { document.getElementById('replyText').focus(); return; }
+            const btn = document.getElementById('replyBtn');
+            btn.disabled = true; btn.textContent = 'sending... 💛';
+            await set(ref(db, `periods/${mk}`), {
+                ...currentData[mk],
+                reply: txt,
+                replyTimestamp: Date.now(),
+            });
+        };
+
+        // ── live listener ──
+        onValue(ref(db, 'periods'), snap => render(snap.val()));
+
+        } // end else
+    </script>
+</body>
+</html>
