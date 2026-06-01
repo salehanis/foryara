@@ -95,6 +95,11 @@
         <p class="period-sub">just between us 💛</p>
     </div>
 
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;position:relative;z-index:1;">
+        <span id="connDot" style="width:10px;height:10px;border-radius:50%;background:#555;display:inline-block;transition:background .4s;"></span>
+        <span id="connTxt" style="font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);">connecting…</span>
+    </div>
+
     <div class="who-toggle">
         <button id="btnHim" class="who-opt" onclick="setWho('him')">💛 him</button>
         <button id="btnHer" class="who-opt" onclick="setWho('her')">🌸 her</button>
@@ -136,6 +141,13 @@
 
         const app = initializeApp(firebaseConfig);
         const db  = getDatabase(app);
+
+        // ── connection status dot ──
+        onValue(ref(db, '.info/connected'), snap => {
+            const ok = snap.val() === true;
+            document.getElementById('connDot').style.background = ok ? '#4ade80' : '#f87171';
+            document.getElementById('connTxt').textContent = ok ? 'connected 🟢' : 'offline 🔴';
+        });
 
         const SYMPTOMS = [
             { key:'cramps',   label:'😣 cramps' },
@@ -303,13 +315,20 @@
             btn.disabled = true; btn.textContent = 'saving... 🌸';
             const mk       = monthKey();
             const existing = currentData[mk] || {};
-            await set(ref(db, `periods/${mk}`), {
-                feeling, painLevel: pv, symptoms: [...selectedSymptoms],
-                timestamp: Date.now(),
-                reply: existing.reply || null,
-                replyTimestamp: existing.replyTimestamp || null,
-            });
-            selectedSymptoms = [];
+            try {
+                await set(ref(db, `periods/${mk}`), {
+                    feeling, painLevel: pv, symptoms: [...selectedSymptoms],
+                    timestamp: Date.now(),
+                    reply: existing.reply || null,
+                    replyTimestamp: existing.replyTimestamp || null,
+                });
+                selectedSymptoms = [];
+            } catch(e) {
+                btn.disabled = false;
+                btn.textContent = 'failed — check connection ✗';
+                btn.style.background = 'linear-gradient(135deg,#f87171,#dc2626)';
+                console.error('submitEntry failed:', e);
+            }
         };
 
         // ── submit reply ──
@@ -318,11 +337,18 @@
             if (!txt) { document.getElementById('replyText').focus(); return; }
             const btn = document.getElementById('replyBtn');
             btn.disabled = true; btn.textContent = 'sending... 💛';
-            await set(ref(db, `periods/${mk}`), {
-                ...currentData[mk],
-                reply: txt,
-                replyTimestamp: Date.now(),
-            });
+            try {
+                await set(ref(db, `periods/${mk}`), {
+                    ...currentData[mk],
+                    reply: txt,
+                    replyTimestamp: Date.now(),
+                });
+            } catch(e) {
+                btn.disabled = false;
+                btn.textContent = 'failed ✗';
+                btn.style.background = 'linear-gradient(135deg,#f87171,#dc2626)';
+                console.error('submitReply failed:', e);
+            }
         };
 
         // ── live listener ──
