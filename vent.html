@@ -7,243 +7,88 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&family=Boogaloo&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        .vent-page {
-            min-height: 100vh;
-            background: url('bg.gif') center center / contain no-repeat;
-            background-color: #1a1a2e;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .vent-page { min-height:100vh; background:url('bg.gif') center/contain no-repeat; background-color:#1a1a2e; display:flex; flex-direction:column; align-items:center; }
+        .vent-header { text-align:center; padding:10px 20px 20px; }
+        .vent-big-icon { font-size:5rem; display:block; animation:bigBounce 2s ease-in-out infinite; filter:drop-shadow(0 8px 16px rgba(0,0,0,.45)); margin-bottom:8px; }
+        .vent-page-title { font-size:2.8rem; color:white; text-shadow:4px 4px 0 rgba(0,0,0,.5),-2px -2px 0 rgba(0,0,0,.28); letter-spacing:2px; }
+        .vent-page-sub { font-family:'Nunito',sans-serif; font-size:1rem; color:rgba(255,255,255,.8); font-weight:700; margin-top:6px; }
 
-        .vent-header {
-            text-align: center;
-            padding: 10px 20px 20px;
-        }
-
-        .vent-big-icon {
-            font-size: 5rem;
-            display: block;
-            animation: bigBounce 2s ease-in-out infinite;
-            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.45));
-            margin-bottom: 8px;
-        }
-
-        .vent-page-title {
-            font-size: 2.8rem;
-            color: white;
-            text-shadow: 4px 4px 0 rgba(0,0,0,0.5), -2px -2px 0 rgba(0,0,0,0.28);
-            letter-spacing: 2px;
-        }
-
-        .vent-page-sub {
-            font-family: 'Nunito', sans-serif;
-            font-size: 1rem;
-            color: rgba(255,255,255,0.8);
-            font-weight: 700;
-            margin-top: 6px;
-        }
-
-        .vent-box-section {
-            width: 100%;
-            max-width: 720px;
-            padding: 40px 25px 50px;
-        }
+        .vent-box-section { width:100%; max-width:720px; padding:10px 25px 60px; display:flex; flex-direction:column; gap:20px; }
 
         .vent-box {
-            background: rgba(255, 254, 242, 0.55);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            border: 5px solid #222;
-            border-radius: 30px;
-            box-shadow: 8px 8px 0px #222;
-            padding: 30px 36px;
-            position: relative;
-            animation: notePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+            background:rgba(255,254,242,.55);
+            backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+            border:5px solid #222; border-radius:30px;
+            box-shadow:8px 8px 0 #222; padding:30px 32px;
+            animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) both;
         }
 
-        .vent-box-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 18px;
-            padding-bottom: 16px;
-            border-bottom: 3px dashed #ccc;
-        }
+        .vent-box-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:16px; border-bottom:3px dashed #ccc; }
+        .vent-box-title { font-family:'Fredoka One',cursive; font-size:1.7rem; color:#333; }
+        .save-indicator { font-family:'Nunito',sans-serif; font-size:.85rem; color:#888; font-weight:700; display:flex; align-items:center; gap:5px; }
+        .save-dot { width:8px; height:8px; border-radius:50%; background:#ccc; transition:background .3s; }
+        .save-dot.saved { background:#4CAF50; }
 
-        .vent-box-title {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.7rem;
-            color: #333;
+        textarea.vent-area {
+            width:100%; min-height:300px; border:none; background:transparent;
+            font-family:'Nunito',sans-serif; font-size:1.1rem; font-weight:700; color:#333;
+            resize:vertical; outline:none; line-height:2;
+            background-image:repeating-linear-gradient(transparent,transparent 31px,#c8d8f0 31px,#c8d8f0 32px);
+            padding-bottom:10px; box-sizing:border-box;
         }
+        textarea.vent-area::placeholder { color:#aaa; font-weight:600; }
 
-        .save-indicator {
-            font-family: 'Nunito', sans-serif;
-            font-size: 0.85rem;
-            color: #888;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .save-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #ccc;
-            transition: background 0.3s ease;
-        }
-        .save-dot.saved { background: #4CAF50; }
-
-        textarea {
-            width: 100%;
-            min-height: 300px;
-            border: none;
-            background: transparent;
-            font-family: 'Nunito', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #333;
-            resize: vertical;
-            outline: none;
-            line-height: 2;
-            background-image: repeating-linear-gradient(
-                transparent,
-                transparent 31px,
-                #c8d8f0 31px,
-                #c8d8f0 32px
-            );
-            padding-bottom: 10px;
-        }
-
-        textarea::placeholder {
-            color: #aaa;
-            font-weight: 600;
-        }
-
-        .vent-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 20px;
-            padding-top: 18px;
-            border-top: 3px dashed #ccc;
-            flex-wrap: wrap;
-        }
+        .vent-actions { display:flex; align-items:center; gap:12px; margin-top:20px; padding-top:18px; border-top:3px dashed #ccc; flex-wrap:wrap; }
 
         .send-btn {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.1rem;
-            color: white;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: 3px solid #222;
-            border-radius: 50px;
-            padding: 10px 28px;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px #222;
-            transition: all 0.2s ease;
-            letter-spacing: 0.5px;
+            font-family:'Fredoka One',cursive; font-size:1.1rem; color:white;
+            background:linear-gradient(135deg,#667eea,#764ba2);
+            border:3px solid #222; border-radius:50px; padding:10px 28px;
+            cursor:pointer; box-shadow:3px 3px 0 #222; transition:all .2s; letter-spacing:.5px;
         }
+        .send-btn:hover { transform:translateY(-3px); box-shadow:5px 6px 0 #222; }
+        .send-btn:active { transform:translateY(1px); box-shadow:1px 1px 0 #222; }
+        .send-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
 
-        .send-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 5px 6px 0px #222;
+        .clear-btn { font-family:'Fredoka One',cursive; font-size:1rem; color:#999; background:transparent; border:3px solid #ddd; border-radius:50px; padding:8px 20px; cursor:pointer; transition:all .2s; }
+        .clear-btn:hover { color:#ff4444; border-color:#ff4444; }
+        .char-count { font-family:'Nunito',sans-serif; font-size:.85rem; color:#bbb; font-weight:600; margin-left:auto; }
+
+        /* Inbox */
+        .inbox-box {
+            background:rgba(255,254,242,.55);
+            backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+            border:5px solid #222; border-radius:30px;
+            box-shadow:8px 8px 0 #222; padding:26px 28px;
+            animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) .1s both;
         }
+        .inbox-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:14px; border-bottom:3px dashed #ddd; }
+        .inbox-title { font-family:'Fredoka One',cursive; font-size:1.4rem; color:#333; }
+        .inbox-count { font-family:'Nunito',sans-serif; font-size:.82rem; font-weight:900; color:#a78bfa; }
 
-        .send-btn:active {
-            transform: translateY(1px);
-            box-shadow: 1px 1px 0px #222;
+        .vent-item { padding:16px 6px; border-bottom:2px solid rgba(200,200,200,.3); }
+        .vent-item:last-child { border-bottom:none; }
+        .vent-item-meta { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+        .vent-item-time { font-family:'Nunito',sans-serif; font-size:.75rem; font-weight:900; color:#bbb; letter-spacing:1px; }
+        .vent-item-text { font-family:'Nunito',sans-serif; font-size:.97rem; font-weight:700; color:#444; line-height:1.7; white-space:pre-wrap; }
+
+        .heart-btn {
+            background:transparent; border:none; cursor:pointer;
+            font-size:1.2rem; padding:2px 6px; border-radius:8px;
+            transition:transform .2s; line-height:1;
         }
+        .heart-btn:hover { transform:scale(1.3); }
+        .heart-btn.hearted { filter:drop-shadow(0 0 4px rgba(255,100,100,.6)); }
 
-        .send-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .del-btn { background:transparent; border:none; cursor:pointer; font-size:.85rem; color:#ddd; padding:2px 5px; border-radius:6px; transition:color .2s; }
+        .del-btn:hover { color:#ff4444; }
 
-        .clear-btn {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1rem;
-            color: #999;
-            background: transparent;
-            border: 3px solid #ddd;
-            border-radius: 50px;
-            padding: 8px 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .clear-btn:hover {
-            color: #ff4444;
-            border-color: #ff4444;
-        }
-
-        .char-count {
-            font-family: 'Nunito', sans-serif;
-            font-size: 0.85rem;
-            color: #bbb;
-            font-weight: 600;
-            margin-left: auto;
-        }
-
-        /* Success message */
-        .success-msg {
-            display: none;
-            text-align: center;
-            padding: 24px;
-            animation: notePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-        }
-
-        .success-msg.show { display: block; }
-
-        .success-emoji { font-size: 4rem; display: block; margin-bottom: 12px; }
-
-        .success-title {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.8rem;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .success-sub {
-            font-family: 'Nunito', sans-serif;
-            font-size: 1rem;
-            color: #666;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .write-again-btn {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1rem;
-            color: #667eea;
-            background: transparent;
-            border: 3px solid #667eea;
-            border-radius: 50px;
-            padding: 8px 24px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .write-again-btn:hover {
-            background: #667eea;
-            color: white;
-        }
+        .empty-inbox { text-align:center; padding:28px 0; font-family:'Nunito',sans-serif; font-size:.95rem; color:#bbb; font-weight:700; }
     </style>
 </head>
 <body class="vent-page">
-
-    <!-- Netlify form detection (invisible) -->
-    <form name="vent-thoughts" data-netlify="true" style="display:none">
-        <textarea name="message"></textarea>
-    </form>
-
     <div class="rainbow-bar"></div>
-
-    <nav class="emotion-nav">
-        <a href="index.html" class="back-btn">← Back</a>
-    </nav>
+    <nav class="emotion-nav"><a href="index.html" class="back-btn">← Back</a></nav>
 
     <div class="vent-header">
         <span class="vent-big-icon">📓</span>
@@ -252,125 +97,158 @@
     </div>
 
     <section class="vent-box-section">
+
+        <!-- Write box -->
         <div class="vent-box">
             <div class="vent-box-header">
                 <span class="vent-box-title">What's on your mind?</span>
                 <span class="save-indicator">
                     <span class="save-dot" id="saveDot"></span>
-                    <span id="saveText">draft saved</span>
+                    <span id="saveText">draft</span>
                 </span>
             </div>
-
-            <!-- Writing view -->
-            <div id="writeView">
-                <textarea
-                    id="ventArea"
-                    name="message"
-                    placeholder="just start typing... only he can read this when you send it 🤍"
-                ></textarea>
-
-                <div class="vent-actions">
-                    <button class="send-btn" id="sendBtn" onclick="sendVent()">Send 💌</button>
-                    <button class="clear-btn" onclick="clearVent()">clear ✕</button>
-                    <span class="char-count" id="charCount">0 words</span>
-                </div>
-            </div>
-
-            <!-- Success view -->
-            <div class="success-msg" id="successView">
-                <span class="success-emoji">💌</span>
-                <div class="success-title">Sent!</div>
-                <p class="success-sub">He'll read it soon 🤍 you're not alone.</p>
-                <button class="write-again-btn" onclick="writeAgain()">write again</button>
+            <textarea class="vent-area" id="ventArea" placeholder="just start typing... only he can read this when you send it 🤍"></textarea>
+            <div class="vent-actions">
+                <button class="send-btn" id="sendBtn" onclick="sendVent()">Send 💌</button>
+                <button class="clear-btn" onclick="clearDraft()">clear ✕</button>
+                <span class="char-count" id="charCount">0 words</span>
             </div>
         </div>
+
+        <!-- Inbox -->
+        <div class="inbox-box">
+            <div class="inbox-top">
+                <span class="inbox-title">💌 sent thoughts</span>
+                <span class="inbox-count" id="inboxCount">0 messages</span>
+            </div>
+            <div id="inboxList"><div class="empty-inbox">nothing sent yet 🤍</div></div>
+        </div>
+
     </section>
 
     <script>
-        const area = document.getElementById('ventArea');
-        const saveDot = document.getElementById('saveDot');
+        const area     = document.getElementById('ventArea');
+        const saveDot  = document.getElementById('saveDot');
         const saveText = document.getElementById('saveText');
-        const charCount = document.getElementById('charCount');
         let saveTimer;
 
-        // Load draft
+        // Local draft autosave (fast, device-local is fine for drafts)
         area.value = localStorage.getItem('ventDraft') || '';
-        updateWordCount();
-        if (area.value) {
-            saveDot.className = 'save-dot saved';
-            saveText.textContent = 'draft saved';
-        }
+        updateCount();
+        if (area.value) { saveDot.className = 'save-dot saved'; }
 
-        // Autosave draft as they type
         area.addEventListener('input', () => {
-            updateWordCount();
+            updateCount();
             saveDot.className = 'save-dot';
-            saveText.textContent = 'saving...';
+            saveText.textContent = 'saving…';
             clearTimeout(saveTimer);
             saveTimer = setTimeout(() => {
                 localStorage.setItem('ventDraft', area.value);
                 saveDot.className = 'save-dot saved';
                 saveText.textContent = 'draft saved';
-            }, 800);
+            }, 700);
         });
 
-        function updateWordCount() {
-            const words = area.value.trim() === '' ? 0 : area.value.trim().split(/\s+/).length;
-            charCount.textContent = words + (words === 1 ? ' word' : ' words');
+        function updateCount() {
+            const w = area.value.trim() === '' ? 0 : area.value.trim().split(/\s+/).length;
+            document.getElementById('charCount').textContent = w + (w === 1 ? ' word' : ' words');
         }
 
-        function clearVent() {
-            if (confirm('Clear your draft?')) {
-                area.value = '';
-                localStorage.removeItem('ventDraft');
-                saveDot.className = 'save-dot';
-                saveText.textContent = 'cleared';
-                updateWordCount();
-            }
-        }
-
-        function sendVent() {
-            if (!area.value.trim()) {
-                area.placeholder = "write something first 🤍";
-                area.focus();
-                return;
-            }
-
-            const btn = document.getElementById('sendBtn');
-            btn.disabled = true;
-            btn.textContent = 'Sending...';
-
-            fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({
-                    'form-name': 'vent-thoughts',
-                    'message': area.value
-                }).toString()
-            })
-            .then(() => {
-                localStorage.removeItem('ventDraft');
-                document.getElementById('writeView').style.display = 'none';
-                document.getElementById('successView').classList.add('show');
-            })
-            .catch(() => {
-                btn.disabled = false;
-                btn.textContent = 'Send 💌';
-                alert('Something went wrong, try again 🤍');
-            });
-        }
-
-        function writeAgain() {
+        function clearDraft() {
+            if (area.value && !confirm('Clear your draft?')) return;
             area.value = '';
-            updateWordCount();
+            localStorage.removeItem('ventDraft');
             saveDot.className = 'save-dot';
-            saveText.textContent = 'draft saved';
-            document.getElementById('successView').classList.remove('show');
-            document.getElementById('writeView').style.display = 'block';
-            document.getElementById('sendBtn').disabled = false;
-            document.getElementById('sendBtn').textContent = 'Send 💌';
+            saveText.textContent = 'cleared';
+            updateCount();
         }
-    </script>
 
+        // ── Firebase ──
+        let _db, _vents = [];
+
+        (async () => {
+            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+            const { getDatabase, ref, set, onValue } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
+            _db = getDatabase(initializeApp({
+                apiKey: "AIzaSyBPMzMNVpGsHhouPGjlSREFgm5ijyhgj6M",
+                authDomain: "foryara-cce24.firebaseapp.com",
+                databaseURL: "https://foryara-cce24-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "foryara-cce24",
+                storageBucket: "foryara-cce24.firebasestorage.app",
+                messagingSenderId: "1051054844072",
+                appId: "1:1051054844072:web:1dd1e21e810c93a04d3a9d"
+            }));
+
+            onValue(ref(_db, 'vents'), snap => {
+                const val = snap.val();
+                _vents = val ? Object.values(val).sort((a, b) => b.id - a.id) : [];
+                renderInbox();
+            });
+
+            sendVent = async () => {
+                const text = area.value.trim();
+                if (!text) { area.placeholder = 'write something first 🤍'; area.focus(); return; }
+                const btn = document.getElementById('sendBtn');
+                btn.disabled = true; btn.textContent = 'Sending…';
+                const id = Date.now();
+                try {
+                    await set(ref(_db, 'vents/' + id), { id, text, timestamp: id, hearted: false });
+                    area.value = '';
+                    localStorage.removeItem('ventDraft');
+                    saveDot.className = 'save-dot';
+                    saveText.textContent = 'sent!';
+                    updateCount();
+                    btn.textContent = 'Sent! 💌';
+                    setTimeout(() => { btn.disabled = false; btn.textContent = 'Send 💌'; }, 2000);
+                } catch(e) {
+                    btn.disabled = false; btn.textContent = 'failed ✗';
+                    btn.style.background = 'linear-gradient(135deg,#f87171,#dc2626)';
+                    setTimeout(() => { btn.textContent = 'Send 💌'; btn.style.background = ''; }, 2500);
+                    console.error(e);
+                }
+            };
+
+            heartVent = id => {
+                const v = _vents.find(v => v.id === id);
+                if (v) set(ref(_db, 'vents/' + id), { ...v, hearted: !v.hearted });
+            };
+
+            deleteVent = id => {
+                if (confirm('Delete this message?')) set(ref(_db, 'vents/' + id), null);
+            };
+        })();
+
+        let sendVent   = () => {};
+        let heartVent  = () => {};
+        let deleteVent = () => {};
+
+        function renderInbox() {
+            const list = document.getElementById('inboxList');
+            const cnt  = document.getElementById('inboxCount');
+            cnt.textContent = _vents.length === 1 ? '1 message' : _vents.length + ' messages';
+            if (_vents.length === 0) { list.innerHTML = '<div class="empty-inbox">nothing sent yet 🤍</div>'; return; }
+            list.innerHTML = _vents.map(v => `
+                <div class="vent-item">
+                    <div class="vent-item-meta">
+                        <span class="vent-item-time">${fmtTime(v.timestamp)}</span>
+                        <span>
+                            <button class="heart-btn ${v.hearted ? 'hearted' : ''}" onclick="heartVent(${v.id})">${v.hearted ? '💛' : '🤍'}</button>
+                            <button class="del-btn" onclick="deleteVent(${v.id})">✕</button>
+                        </span>
+                    </div>
+                    <div class="vent-item-text">${escHtml(v.text)}</div>
+                </div>`).join('');
+        }
+
+        function fmtTime(ts) {
+            return new Date(ts).toLocaleDateString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+        }
+
+        function escHtml(s) {
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        renderInbox();
+    </script>
 </body>
 </html>
