@@ -26,6 +26,22 @@ self.addEventListener('activate', e =>
     )
 );
 
+// Tapping a notification opens the app
+self.addEventListener('notificationclick', e => {
+    e.notification.close();
+    const target = e.notification.tag === 'period-msg'
+        ? '/foryara/period.html'
+        : '/foryara/vent.html';
+    e.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+            for (const c of list) {
+                if (c.url.includes('/foryara/') && 'focus' in c) return c.focus();
+            }
+            return clients.openWindow(target);
+        })
+    );
+});
+
 self.addEventListener('fetch', e => {
     const url = new URL(e.request.url);
     // Only serve images/css from cache — HTML always comes from network

@@ -160,9 +160,33 @@
             { key:'sleep',    label:"💤 can't sleep" },
         ];
 
+        // ── Notifications ──
+        async function notify(title, body) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                reg.showNotification(title, {
+                    body,
+                    icon: '/foryara/apple-touch-icon.png',
+                    badge: '/foryara/apple-touch-icon.png',
+                    vibrate: [200, 100, 200],
+                    tag: 'period-msg',
+                    renotify: true,
+                });
+            } catch(e) {
+                new Notification(title, { body, icon: '/foryara/apple-touch-icon.png' });
+            }
+        }
+
+        window.askNotifPerm = async () => {
+            const perm = await Notification.requestPermission();
+            if (perm === 'granted') render(currentData);
+        };
+
         let who = localStorage.getItem('periodWho') || 'him';
         let selectedSymptoms = [];
         let currentData = {};
+        let _prevData = null;
 
         const monthKey  = () => { const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`; };
         const fmtMonth  = k  => { const [y,m]=k.split('-').map(Number); return ['January','February','March','April','May','June','July','August','September','October','November','December'][m-1]+' '+y; };
@@ -182,6 +206,17 @@
         document.getElementById('btnHim').className = 'who-opt'+(who==='him'?' him-active':'');
         document.getElementById('btnHer').className = 'who-opt'+(who==='her'?' her-active':'');
 
+        function notifBannerHTML() {
+            if (!('Notification' in window)) return '';
+            if (Notification.permission === 'granted') return '';
+            if (Notification.permission === 'denied') return '';
+            return `<div class="p-card" style="display:flex;align-items:center;gap:12px;padding:16px 20px;margin-bottom:0;">
+                <span style="font-size:1.4rem;">🔔</span>
+                <span style="flex:1;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;color:#555;">get notified when a message arrives</span>
+                <button onclick="askNotifPerm()" style="font-family:'Fredoka One',cursive;font-size:.85rem;color:white;background:#a78bfa;border:2px solid #7c3aed;border-radius:20px;padding:6px 14px;cursor:pointer;flex-shrink:0;">enable</button>
+            </div>`;
+        }
+
         // ── render ──
         function render(data) {
             currentData = data || {};
@@ -189,7 +224,7 @@
             const entry = currentData[mk];
             const past  = Object.keys(currentData).filter(k=>k!==mk).sort().reverse();
 
-            let html = '';
+            let html = notifBannerHTML();
 
             if (!entry && who === 'her') {
                 html += logFormHTML();
@@ -352,7 +387,25 @@
         };
 
         // ── live listener ──
-        onValue(ref(db, 'periods'), snap => render(snap.val()));
+        onValue(ref(db, 'periods'), snap => {
+            const data = snap.val() || {};
+            const mk = monthKey();
+
+            if (_prevData !== null) {
+                const prev = _prevData[mk];
+                const curr = data[mk];
+                if (curr && !prev) {
+                    // New entry this month
+                    notify('New message 🌸', `she logged how she's feeling this month 💛`);
+                } else if (curr && prev && curr.reply && (!prev.reply || curr.reply !== prev.reply)) {
+                    // New reply
+                    notify('New reply 💛', curr.reply.length > 80 ? curr.reply.slice(0,80)+'…' : curr.reply);
+                }
+            }
+
+            _prevData = data;
+            render(data);
+        });
 
         } // end else
     </script>
