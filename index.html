@@ -3,269 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For Yara 💛</title>
-
-    <!-- PWA -->
-    <link rel="manifest" href="/foryara/manifest.json">
-    <meta name="theme-color" content="#1a1a2e">
-    <link rel="apple-touch-icon" href="/foryara/apple-touch-icon.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="For Yara">
-
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&family=Boogaloo&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>For Yara</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        /* ── Section labels ── */
-        .section-label {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1rem;
-            color: rgba(255,255,255,.75);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 1px 1px 0 rgba(0,0,0,.4);
-            margin: 28px 0 12px;
-            width: 85%;
-            max-width: 360px;
-            text-align: left;
-            position: relative;
-            z-index: 1;
-        }
-        .section-label::after {
-            content: '';
-            display: block;
-            margin-top: 6px;
-            height: 3px;
-            border-radius: 4px;
-            background: rgba(255,255,255,.25);
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
-        /* ── 2-column feature grid ── */
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            width: 85%;
-            max-width: 360px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ── Feature card (app icon style) ── */
-        .feat-card {
+        body {
+            min-height: 100vh;
+            background: #1a1a2e;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px 10px 18px;
-            border-radius: 22px;
-            border: 4px solid rgba(255,255,255,.6);
-            text-decoration: none;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            box-shadow: 5px 5px 0 rgba(0,0,0,.35);
-            transition: transform .2s ease, box-shadow .2s ease;
-            position: relative;
-            overflow: hidden;
-            min-height: 110px;
+            padding: 30px 20px;
+            font-family: 'Nunito', sans-serif;
         }
-        .feat-card::before {
-            content: '';
-            position: absolute;
+
+        .card {
+            background: rgba(255,254,242,0.07);
+            border: 2px solid rgba(255,255,255,0.12);
+            border-radius: 28px;
+            padding: 44px 38px;
+            max-width: 600px;
+            width: 100%;
+            animation: fadeUp 1s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(24px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        .icon {
+            font-size: 2.4rem;
+            display: block;
+            margin-bottom: 28px;
+            opacity: 0.7;
+        }
+
+        .message {
+            font-size: 1.08rem;
+            line-height: 2;
+            color: rgba(255,255,255,0.82);
+            font-weight: 600;
+            white-space: pre-line;
+        }
+
+        .sign {
+            margin-top: 36px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 1px;
+        }
+
+        /* birthday overlay */
+        #bday-overlay {
+            display: none;
+            position: fixed;
             inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,.22) 0%, transparent 55%);
-            border-radius: 18px;
+            z-index: 9999;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            animation: bdayFadeIn .8s ease both;
+        }
+        #bday-overlay.show { display: flex; }
+
+        @keyframes bdayFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .bday-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(2.4rem, 8vw, 5rem);
+            color: #fff;
+            letter-spacing: 2px;
+            animation: popIn .6s cubic-bezier(.34,1.56,.64,1) .3s both;
+            text-shadow: 0 0 40px rgba(167,139,250,.6);
+        }
+
+        .bday-subtitle {
+            font-family: 'Nunito', sans-serif;
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: rgba(255,255,255,.75);
+            font-weight: 700;
+            margin-top: 12px;
+            animation: popIn .6s cubic-bezier(.34,1.56,.64,1) .5s both;
+        }
+
+        .bday-emojis {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin-top: 20px;
+            animation: popIn .6s cubic-bezier(.34,1.56,.64,1) .7s both;
+            letter-spacing: 8px;
+        }
+
+        .bday-close {
+            margin-top: 40px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            color: white;
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+            border: 3px solid #fff;
+            border-radius: 50px;
+            padding: 12px 32px;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(167,139,250,.4);
+            animation: popIn .6s cubic-bezier(.34,1.56,.64,1) .9s both;
+            transition: transform .2s;
+        }
+        .bday-close:hover { transform: scale(1.06); }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(.6); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        /* confetti */
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
             pointer-events: none;
         }
-        .feat-card:hover  { transform: translateY(-6px); box-shadow: 7px 11px 0 rgba(0,0,0,.35); }
-        .feat-card:active { transform: translateY(3px);  box-shadow: 2px 2px 0 rgba(0,0,0,.35); }
-
-        .feat-emoji { font-size: 2.4rem; margin-bottom: 8px; display: block; filter: drop-shadow(0 3px 6px rgba(0,0,0,.3)); }
-        .feat-label {
-            font-family: 'Fredoka One', cursive;
-            font-size: .95rem;
-            color: white;
-            text-shadow: 2px 2px 0 rgba(0,0,0,.35);
-            letter-spacing: .5px;
-            text-align: center;
-            line-height: 1.2;
+        @keyframes confettiFall {
+            0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
         }
-        .feat-sub {
-            font-family: 'Nunito', sans-serif;
-            font-size: .72rem;
-            color: rgba(255,255,255,.8);
-            font-weight: 700;
-            margin-top: 4px;
-            text-align: center;
-            line-height: 1.3;
-        }
-
-        /* Card accent colors */
-        .feat-purple  { background: rgba(167,139,250,.35); border-color: rgba(167,139,250,.7); }
-        .feat-pink    { background: rgba(240,147,251,.3);  border-color: rgba(240,147,251,.7); }
-        .feat-green   { background: rgba(52,211,153,.3);   border-color: rgba(52,211,153,.7);  }
-        .feat-yellow  { background: rgba(251,191,36,.3);   border-color: rgba(251,191,36,.7);  }
-        .feat-blue    { background: rgba(96,165,250,.3);   border-color: rgba(96,165,250,.7);  }
-        .feat-rose    { background: rgba(251,113,133,.3);  border-color: rgba(251,113,133,.7); }
-        .feat-sky     { background: rgba(125,211,252,.3);  border-color: rgba(125,211,252,.7); }
-        .feat-blush   { background: rgba(249,168,212,.3);  border-color: rgba(249,168,212,.8); }
-
-        /* Wide card (spans both columns) */
-        .feat-card-wide {
-            grid-column: 1 / -1;
-            flex-direction: row;
-            gap: 14px;
-            justify-content: flex-start;
-            padding: 16px 22px;
-            min-height: auto;
-        }
-        .feat-card-wide .feat-emoji { margin-bottom: 0; font-size: 2rem; }
-        .feat-card-wide .feat-label { font-size: 1.1rem; text-align: left; }
-        .feat-card-wide .feat-sub   { font-size: .8rem; text-align: left; margin-top: 2px; }
-        .feat-card-wide .feat-text  { display: flex; flex-direction: column; }
     </style>
 </head>
-<body class="main-page">
+<body>
+    <!-- Birthday overlay -->
+    <div id="bday-overlay">
+        <div class="bday-title">Happy Birthday Yara 🎂</div>
+        <div class="bday-subtitle">wishing you the most beautiful day 🤍</div>
+        <div class="bday-emojis">🎉🎈🎁🌸💛</div>
+        <button class="bday-close" onclick="closeBday()">thank you 🤍</button>
+    </div>
+    <div class="card">
+        <span class="icon">🤍</span>
+        <div class="message">you deserve a proper message to end this once and for all
 
-    <div class="rainbow-bar"></div>
+yes i broke down when mama came and she spoke to me about it but i wrote the message yara and ima write this cause we both know its a dead end no matter how hard i try to fix things
 
-    <!-- Floating background decorations -->
-    <div class="float-deco" style="top:90px;  left:4%;  animation-delay:0s;">⭐</div>
-    <div class="float-deco" style="top:160px; right:4%; animation-delay:0.8s;">✨</div>
-    <div class="float-deco" style="bottom:130px; left:6%; animation-delay:1.6s;">🌈</div>
-    <div class="float-deco" style="bottom:90px;  right:6%; animation-delay:2.4s;">💫</div>
+just accept the fact that it ended
 
-    <main class="main-container">
+we both fcked each other up. i am sorry from my behalf but as i said before i placed my dignity aside and it was a mistake. i accepted things that you did that no man would accept and came back with open arms and a loving heart
 
-        <!-- ── Header ── -->
-        <header class="main-header">
-            <span class="cat-icon">🐱</span>
-            <h1 class="main-title">How Are You Feeling?</h1>
-            <p class="main-subtitle">Tap on what's in your heart right now</p>
-        </header>
+and i cant be your cage. thats not love
 
-        <!-- ── Emotion Cards ── -->
-        <div class="emotions-grid">
-            <a href="mad.html" class="emotion-card mad-card">
-                <span class="card-emoji">😡</span>
-                <span class="card-label">Mad</span>
-                <div class="card-glow"></div>
-            </a>
-            <a href="sad.html" class="emotion-card sad-card">
-                <span class="card-emoji">😢</span>
-                <span class="card-label">Sad</span>
-                <div class="card-glow"></div>
-            </a>
-            <a href="anxious.html" class="emotion-card anxious-card">
-                <span class="card-emoji">😰</span>
-                <span class="card-label">Anxious</span>
-                <div class="card-glow"></div>
-            </a>
-            <a href="depressed.html" class="emotion-card depressed-card">
-                <span class="card-emoji">😔</span>
-                <span class="card-label">Depressed</span>
-                <div class="card-glow"></div>
-            </a>
-        </div>
+hope you find your peace and try to get closer to allah, it will help you heal and get better in life. hope you focus on your goals and deen and wish you all the luck in finding yourself
 
-        <!-- ── Section: Your Space ── -->
-        <div class="section-label">your space 🤍</div>
-        <div class="feature-grid">
-
-            <a href="vent.html" class="feat-card feat-purple">
-                <span class="feat-emoji">📓</span>
-                <span class="feat-label">Vent & Thoughts</span>
-                <span class="feat-sub">write your mind</span>
-            </a>
-
-            <a href="release.html" class="feat-card feat-sky">
-                <span class="feat-emoji">☁️</span>
-                <span class="feat-label">Release It</span>
-                <span class="feat-sub">let it go 🎈</span>
-            </a>
-
-            <a href="selfcare.html" class="feat-card feat-green feat-card-wide">
-                <span class="feat-emoji">🍵</span>
-                <div class="feat-text">
-                    <span class="feat-label">Self Care</span>
-                    <span class="feat-sub">your daily checklist</span>
-                </div>
-            </a>
-
-        </div>
-
-        <!-- ── Section: Us ── -->
-        <div class="section-label">us 💛</div>
-        <div class="feature-grid">
-
-            <a href="countdown.html" class="feat-card feat-yellow">
-                <span class="feat-emoji">💛</span>
-                <span class="feat-label">Our Countdown</span>
-                <span class="feat-sub">days together</span>
-            </a>
-
-            <a href="dates.html" class="feat-card feat-pink">
-                <span class="feat-emoji">🗓️</span>
-                <span class="feat-label">Date Ideas</span>
-                <span class="feat-sub">spin for fun</span>
-            </a>
-
-            <a href="timeline.html" class="feat-card feat-rose">
-                <span class="feat-emoji">📅</span>
-                <span class="feat-label">Our Story</span>
-                <span class="feat-sub">our moments</span>
-            </a>
-
-            <a href="log.html" class="feat-card feat-blue">
-                <span class="feat-emoji">📊</span>
-                <span class="feat-label">Emotions Log</span>
-                <span class="feat-sub">how you've been</span>
-            </a>
-
-            <a href="period.html" class="feat-card feat-blush feat-card-wide">
-                <span class="feat-emoji">🌸</span>
-                <div class="feat-text">
-                    <span class="feat-label">Once a Month</span>
-                    <span class="feat-sub">just between us 💛</span>
-                </div>
-            </a>
-
-        </div>
-
-        <div class="bottom-deco">
-            <span>✨</span>
-            <span>🐠</span>
-            <span>✨</span>
-        </div>
-
-    </main>
-
-    <div class="rainbow-bar"></div>
-
-    <!-- iOS install hint (shows once) -->
-    <div id="iosHint" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:90%; max-width:360px; background:rgba(255,254,242,.95); backdrop-filter:blur(12px); border:4px solid #222; border-radius:22px; box-shadow:6px 6px 0 #222; padding:16px 20px; z-index:9999; animation:notePop .4s ease both;">
-        <div style="display:flex; align-items:center; gap:12px;">
-            <span style="font-size:2rem;">📲</span>
-            <div style="flex:1;">
-                <div style="font-family:'Fredoka One',cursive; font-size:1rem; color:#333;">add to home screen</div>
-                <div style="font-family:'Nunito',sans-serif; font-size:.8rem; font-weight:700; color:#888; margin-top:2px;">tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong> 💛</div>
-            </div>
-            <button onclick="document.getElementById('iosHint').style.display='none'; localStorage.setItem('iosHintDone','1');" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#bbb; padding:4px;">✕</button>
-        </div>
+and leave me alone</div>
+        <div class="sign">— saleh</div>
     </div>
 
     <script>
-        // Service worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/foryara/sw.js');
+        (function() {
+            const now = new Date();
+            if (now.getMonth() === 6 && now.getDate() === 7) { // July 7 (month is 0-indexed)
+                document.getElementById('bday-overlay').classList.add('show');
+                spawnConfetti();
+            }
+        })();
+
+        function spawnConfetti() {
+            const colors = ['#a78bfa','#f9a8d4','#fcd34d','#6ee7b7','#93c5fd','#fb7185'];
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'confetti-piece';
+                    el.style.left = Math.random() * 100 + 'vw';
+                    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    el.style.width = (8 + Math.random() * 8) + 'px';
+                    el.style.height = (8 + Math.random() * 8) + 'px';
+                    el.style.animationDuration = (2.5 + Math.random() * 3) + 's';
+                    el.style.animationDelay = (Math.random() * 1.5) + 's';
+                    document.body.appendChild(el);
+                    el.addEventListener('animationend', () => el.remove());
+                }, i * 30);
+            }
         }
-        // Show iOS install hint once
-        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-        const isStandalone = window.navigator.standalone;
-        if (isIOS && !isStandalone && !localStorage.getItem('iosHintDone')) {
-            setTimeout(() => { document.getElementById('iosHint').style.display = 'block'; }, 2000);
+
+        function closeBday() {
+            const overlay = document.getElementById('bday-overlay');
+            overlay.style.transition = 'opacity .5s';
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 500);
         }
     </script>
-
 </body>
 </html>
