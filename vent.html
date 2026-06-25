@@ -119,7 +119,10 @@
         <div class="inbox-box">
             <div class="inbox-top">
                 <span class="inbox-title">💌 sent thoughts</span>
-                <span class="inbox-count" id="inboxCount">0 messages</span>
+                <span style="display:flex;align-items:center;gap:10px;">
+                    <span class="inbox-count" id="inboxCount">0 messages</span>
+                    <button onclick="exportVents()" style="font-family:'Fredoka One',cursive;font-size:.8rem;color:white;background:#a78bfa;border:2px solid #7c3aed;border-radius:20px;padding:4px 12px;cursor:pointer;">save backup</button>
+                </span>
             </div>
             <div id="inboxList"><div class="empty-inbox">nothing sent yet 🤍</div></div>
         </div>
@@ -255,6 +258,15 @@
                 if (confirm('Delete this message?')) set(ref(_db, 'vents/' + id), null);
             };
         })();
+
+        function exportVents() {
+            if (_vents.length === 0) { alert('No messages to backup yet 🤍'); return; }
+            const text = _vents.map(v => `[${fmtTime(v.timestamp)}]\n${v.text}`).join('\n\n---\n\n');
+            const a = document.createElement('a');
+            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+            a.download = 'vent-backup-' + new Date().toISOString().slice(0,10) + '.txt';
+            a.click();
+        }
 
         let sendVent   = () => {};
         let heartVent  = () => {};
