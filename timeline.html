@@ -158,6 +158,7 @@
                 <textarea class="tl-textarea" id="newNote" placeholder="write a little something about this moment..."></textarea>
             </div>
             <button class="add-moment-btn" onclick="addMoment()">+ add to our story</button>
+            <button class="add-moment-btn" onclick="exportTimeline()" style="background:#a78bfa;border-color:#7c3aed;margin-top:8px;">save backup</button>
         </div>
 
         <!-- Timeline -->
@@ -228,6 +229,16 @@
 
         let addMoment    = () => {};
         let deleteMoment = () => {};
+
+        function exportTimeline() {
+            if (!_moments || _moments.length === 0) { alert('No timeline moments to backup yet 🤍'); return; }
+            const text = `Our Story Backup — ${new Date().toLocaleDateString()}\n\n` +
+                _moments.map(m => `${m.date} ${m.emoji || ''} ${m.title}${m.note ? '\n  ' + m.note : ''}`).join('\n\n');
+            const a = document.createElement('a');
+            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+            a.download = 'timeline-backup-' + new Date().toISOString().slice(0,10) + '.txt';
+            a.click();
+        }
 
         function render() {
             const tl = document.getElementById('timeline');

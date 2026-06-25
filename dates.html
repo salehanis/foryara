@@ -169,6 +169,7 @@
                 </div>
                 <input type="text" class="idea-text-input" id="ideaInput" placeholder="e.g. rooftop dinner, beach sunset..." maxlength="120" onkeydown="if(event.key==='Enter') addIdea()">
                 <button class="add-idea-btn" onclick="addIdea()">+ add</button>
+                <button class="add-idea-btn" onclick="exportDates()" style="background:#a78bfa;border-color:#7c3aed;">save backup</button>
             </div>
         </div>
 
@@ -255,6 +256,16 @@
         let addIdea   = () => {};
         let toggleDone = () => {};
         let deleteIdea = () => {};
+
+        function exportDates() {
+            if (!_ideas || _ideas.length === 0) { alert('No date ideas to backup yet 🤍'); return; }
+            const text = `Date Ideas Backup — ${new Date().toLocaleDateString()}\n\n` +
+                _ideas.map(d => `${d.emoji || ''} [${d.who}] ${d.text}${d.done ? ' ✓' : ''}`).join('\n');
+            const a = document.createElement('a');
+            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+            a.download = 'date-ideas-backup-' + new Date().toISOString().slice(0,10) + '.txt';
+            a.click();
+        }
 
         function render() {
             const count = document.getElementById('ideasCount');

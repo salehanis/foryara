@@ -105,6 +105,7 @@
                 <div class="all-done-sub">I'm so proud of you. you took care of yourself today 🤍</div>
             </div>
 
+            <button class="reset-care-btn" onclick="exportSelfcare()" style="background:#a78bfa;border-color:#7c3aed;color:white;">save backup</button>
             <button class="reset-care-btn" onclick="resetChecks()">reset checklist</button>
             <p class="resets-note">✨ resets automatically every day</p>
         </div>
@@ -165,6 +166,16 @@
         };
 
         window.resetChecks = () => set(ref(db, 'selfcare/' + todayKey()), {});
+
+        window.exportSelfcare = () => {
+            if (!_data || Object.keys(_data).length === 0) { alert('No selfcare data to backup yet 🤍'); return; }
+            const lines = Object.entries(_data).map(([k,v]) => `${k}: ${v ? '✓' : '✗'}`).join('\n');
+            const text = `Selfcare Backup — ${new Date().toLocaleDateString()}\n\n${lines}`;
+            const a = document.createElement('a');
+            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+            a.download = 'selfcare-backup-' + new Date().toISOString().slice(0,10) + '.txt';
+            a.click();
+        };
     </script>
 </body>
 </html>

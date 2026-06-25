@@ -94,6 +94,10 @@
             </div>
         </div>
 
+        <div style="text-align:center;margin-top:16px;">
+            <button class="save-date-btn" onclick="exportCountdown()" style="background:#a78bfa;border-color:#7c3aed;">save backup</button>
+        </div>
+
     </section>
 
     <script type="module">
@@ -162,6 +166,17 @@
             set(ref(db, 'countdown/nextMeetDate'), val)
                 .then(() => flashBtn('saveNextBtn', true))
                 .catch(err => { console.error(err); flashBtn('saveNextBtn', false); });
+        };
+
+        window.exportCountdown = () => {
+            const met = document.getElementById('metInput') ? document.getElementById('metInput').value : '';
+            const next = document.getElementById('nextMeetInput') ? document.getElementById('nextMeetInput').value : '';
+            if (!met && !next) { alert('No countdown data to backup yet 🤍'); return; }
+            const text = `Countdown Backup — ${new Date().toLocaleDateString()}\n\nWe met: ${met || '—'}\nNext meet: ${next || '—'}`;
+            const a = document.createElement('a');
+            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+            a.download = 'countdown-backup-' + new Date().toISOString().slice(0,10) + '.txt';
+            a.click();
         };
     </script>
 </body>

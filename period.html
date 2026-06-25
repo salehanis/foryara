@@ -103,6 +103,7 @@
     <div class="who-toggle">
         <button id="btnHim" class="who-opt" onclick="setWho('him')">💛 him</button>
         <button id="btnHer" class="who-opt" onclick="setWho('her')">🌸 her</button>
+        <button class="who-opt" onclick="exportPeriod()" style="background:#a78bfa;border-color:#7c3aed;color:white;">save backup</button>
     </div>
 
     <section class="period-section">
@@ -406,6 +407,19 @@
             _prevData = data;
             render(data);
         });
+
+        window.exportPeriod = () => {
+            if (!_prevData || Object.keys(_prevData).length === 0) { alert('No period logs to backup yet 🤍'); return; }
+            const lines = Object.entries(_prevData).map(([month, d]) => {
+                const symptoms = d.symptoms ? Object.keys(d.symptoms).filter(k => d.symptoms[k]).join(', ') : '—';
+                return `${month}\n  mood: ${d.mood || '—'}\n  symptoms: ${symptoms}${d.note ? '\n  note: ' + d.note : ''}${d.reply ? '\n  reply: ' + d.reply : ''}`;
+            }).join('\n\n');
+            const text = `Period Log Backup — ${new Date().toLocaleDateString()}\n\n${lines}`;
+            const a = document.createElement('a');
+            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+            a.download = 'period-backup-' + new Date().toISOString().slice(0,10) + '.txt';
+            a.click();
+        };
 
         } // end else
     </script>

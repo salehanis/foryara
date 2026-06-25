@@ -263,6 +263,7 @@
             <div id="emotionsList"></div>
 
             <div class="log-footer">
+                <button class="reset-btn" onclick="exportLog()" style="background:#a78bfa;border-color:#7c3aed;">save backup</button>
                 <button class="reset-btn" onclick="resetAll()">reset all ✕</button>
                 <span class="last-logged" id="lastLogged"></span>
             </div>
@@ -328,6 +329,16 @@
 
         let logEmotion = () => {};
         let resetAll   = () => {};
+
+        function exportLog() {
+            if (!_counts || Object.keys(_counts).length === 0) { alert('No emotion logs to backup yet 🤍'); return; }
+            const lines = Object.entries(_counts).map(([k,v]) => `${k}: ${v} times`).join('\n');
+            const text = `Emotion Log Backup — ${new Date().toLocaleDateString()}\n\n${lines}`;
+            const a = document.createElement('a');
+            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+            a.download = 'emotion-log-backup-' + new Date().toISOString().slice(0,10) + '.txt';
+            a.click();
+        }
 
         function getTotal(data) { return Object.values(data).reduce((a,b) => a+b, 0); }
 
