@@ -314,10 +314,11 @@
                 render();
             });
 
-            logEmotion = (key, label) => {
-                _counts[key] = (_counts[key] || 0) + 1;
+            logEmotion = (key, label, delta) => {
+                const next = (_counts[key] || 0) + delta;
+                _counts[key] = Math.max(0, next);
                 set(ref(db, 'emotionLog'), { counts: _counts, lastTime: new Date().toISOString(), lastLabel: label });
-                const btn = document.getElementById('btn-' + key);
+                const btn = document.getElementById('btn-plus-' + key);
                 btn.classList.remove('popped'); void btn.offsetWidth; btn.classList.add('popped');
             };
 
@@ -352,14 +353,14 @@
             }
             document.getElementById('emotionsList').innerHTML = emotions.map(e => {
                 const count = _counts[e.key] || 0;
-                const pct   = total > 0 ? Math.round((count / total) * 100) : 0;
+                const pct   = Math.min(count, 100);
                 return `<div class="emotion-row">
                     <span class="row-emoji">${e.emoji}</span>
                     <span class="row-name">${e.label}</span>
                     <div class="bar-wrap"><div class="bar-fill bar-${e.key}" style="width:${pct}%"></div></div>
-                    <span class="row-percent">${pct}%</span>
-                    <span class="row-count">${count}</span>
-                    <button class="log-btn" id="btn-${e.key}" onclick="logEmotion('${e.key}','${e.label}')">+</button>
+                    <span class="row-percent">${count}/100</span>
+                    <button class="log-btn" id="btn-minus-${e.key}" onclick="logEmotion('${e.key}','${e.label}',-1)" style="background:#f87171;border-color:#dc2626;">−</button>
+                    <button class="log-btn" id="btn-plus-${e.key}" onclick="logEmotion('${e.key}','${e.label}',1)">+</button>
                 </div>`;
             }).join('');
         }
