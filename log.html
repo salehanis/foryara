@@ -166,25 +166,48 @@
             line-height: 1;
         }
 
-        .log-btn:hover {
-            transform: scale(1.15);
-            box-shadow: 3px 3px 0px #222;
-        }
-
-        .log-btn:active {
-            transform: scale(0.92);
-            box-shadow: 1px 1px 0px #222;
-        }
-
-        .log-btn.popped {
-            animation: btnPop 0.3s ease;
-        }
+        .log-btn:hover { transform: scale(1.15); box-shadow: 3px 3px 0px #222; }
+        .log-btn:active { transform: scale(0.92); box-shadow: 1px 1px 0px #222; }
+        .log-btn.popped { animation: btnPop 0.3s ease; }
 
         @keyframes btnPop {
             0%   { transform: scale(1); }
             50%  { transform: scale(1.35); }
             100% { transform: scale(1); }
         }
+
+        .pct-input {
+            width: 48px;
+            height: 34px;
+            border-radius: 10px;
+            border: 3px solid #ddd;
+            background: #f9f9f9;
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.95rem;
+            color: #333;
+            text-align: center;
+            flex-shrink: 0;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .pct-input:focus { border-color: #a78bfa; }
+
+        .log-save-btn {
+            height: 34px;
+            padding: 0 12px;
+            border-radius: 10px;
+            border: 3px solid #222;
+            background: #a78bfa;
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.85rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 #222;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        .log-save-btn:hover { transform: translateY(-2px); box-shadow: 3px 4px 0 #222; }
+        .log-save-btn:active { transform: translateY(1px); box-shadow: 1px 1px 0 #222; }
 
         /* Emotion bar colors */
         .bar-happy      { background: linear-gradient(90deg, #FFD700, #FFA500); }
@@ -314,11 +337,13 @@
                 render();
             });
 
-            logEmotion = (key, label, delta) => {
-                const next = (_counts[key] || 0) + delta;
-                _counts[key] = Math.max(0, next);
+            logEmotion = (key, label) => {
+                const input = document.getElementById('input-' + key);
+                const val = Math.min(100, Math.max(0, parseInt(input.value) || 0));
+                _counts[key] = val;
+                input.value = '';
                 set(ref(db, 'emotionLog'), { counts: _counts, lastTime: new Date().toISOString(), lastLabel: label });
-                const btn = document.getElementById('btn-plus-' + key);
+                const btn = document.getElementById('btn-' + key);
                 btn.classList.remove('popped'); void btn.offsetWidth; btn.classList.add('popped');
             };
 
@@ -358,9 +383,9 @@
                     <span class="row-emoji">${e.emoji}</span>
                     <span class="row-name">${e.label}</span>
                     <div class="bar-wrap"><div class="bar-fill bar-${e.key}" style="width:${pct}%"></div></div>
-                    <span class="row-percent">${count}/100</span>
-                    <button class="log-btn" id="btn-minus-${e.key}" onclick="logEmotion('${e.key}','${e.label}',-1)" style="background:#f87171;border-color:#dc2626;">−</button>
-                    <button class="log-btn" id="btn-plus-${e.key}" onclick="logEmotion('${e.key}','${e.label}',1)">+</button>
+                    <span class="row-percent">${count}%</span>
+                    <input class="pct-input" id="input-${e.key}" type="number" min="0" max="100" placeholder="${count}" onkeydown="if(event.key==='Enter') logEmotion('${e.key}','${e.label}')">
+                    <button class="log-save-btn" id="btn-${e.key}" onclick="logEmotion('${e.key}','${e.label}')">log</button>
                 </div>`;
             }).join('');
         }
