@@ -138,6 +138,9 @@
         .confetti-piece { position:fixed; width:10px; height:10px; border-radius:2px; animation:confettiFall linear forwards; pointer-events:none; }
         @keyframes confettiFall { 0% { transform:translateY(-20px) rotate(0deg); opacity:1; } 100% { transform:translateY(110vh) rotate(720deg); opacity:0; } }
     </style>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#1a1a2e">
 </head>
 <body class="main-page">
     <div id="bday-overlay">
@@ -294,6 +297,10 @@
             overlay.style.transition = 'opacity .5s';
             overlay.style.opacity = '0';
             setTimeout(() => overlay.remove(), 500);
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/foryara/sw.js').catch(() => {});
         }
     </script>
 </body>
