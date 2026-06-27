@@ -84,6 +84,65 @@
         .del-btn:hover { color:#ff4444; }
 
         .empty-inbox { text-align:center; padding:28px 0; font-family:'Nunito',sans-serif; font-size:.95rem; color:#bbb; font-weight:700; }
+
+        /* Replies */
+        .replies-section { margin-top:12px; padding-top:10px; border-top:2px dashed #e0e0e0; }
+
+        .reply-bubble {
+            display:flex; flex-direction:column;
+            margin-bottom:8px;
+            max-width:85%;
+        }
+        .reply-bubble.saleh { align-self:flex-end; align-items:flex-end; margin-left:auto; }
+        .reply-bubble.yara  { align-self:flex-start; align-items:flex-start; }
+
+        .reply-sender {
+            font-family:'Fredoka One',cursive; font-size:.72rem; letter-spacing:.5px;
+            margin-bottom:3px; padding:0 4px;
+        }
+        .reply-bubble.saleh .reply-sender { color:#667eea; }
+        .reply-bubble.yara  .reply-sender { color:#f472b6; }
+
+        .reply-text {
+            font-family:'Nunito',sans-serif; font-size:.88rem; font-weight:700;
+            line-height:1.6; white-space:pre-wrap; padding:8px 14px;
+            border-radius:18px; border:2px solid #222;
+            box-shadow:2px 2px 0 #222;
+        }
+        .reply-bubble.saleh .reply-text { background:rgba(102,126,234,.18); border-color:#667eea; color:#333; border-bottom-right-radius:4px; }
+        .reply-bubble.yara  .reply-text { background:rgba(244,114,182,.15); border-color:#f472b6; color:#333; border-bottom-left-radius:4px; }
+
+        .reply-time { font-family:'Nunito',sans-serif; font-size:.68rem; color:#bbb; font-weight:700; margin-top:3px; padding:0 4px; }
+
+        .replies-list { display:flex; flex-direction:column; gap:4px; margin-bottom:10px; }
+
+        .reply-input-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px; }
+
+        .reply-textarea {
+            flex:1; min-width:120px; border:2px solid #ddd; border-radius:14px;
+            padding:8px 12px; font-family:'Nunito',sans-serif; font-size:.88rem; font-weight:700;
+            color:#333; outline:none; resize:none; height:38px; transition:border-color .2s;
+            background:rgba(255,255,255,.8);
+        }
+        .reply-textarea:focus { border-color:#a78bfa; }
+
+        .reply-send-saleh {
+            font-family:'Fredoka One',cursive; font-size:.82rem; color:white;
+            background:linear-gradient(135deg,#667eea,#764ba2);
+            border:2px solid #222; border-radius:20px; padding:7px 14px;
+            cursor:pointer; box-shadow:2px 2px 0 #222; white-space:nowrap;
+            transition:all .15s;
+        }
+        .reply-send-saleh:hover { transform:translateY(-1px); box-shadow:3px 3px 0 #222; }
+
+        .reply-send-yara {
+            font-family:'Fredoka One',cursive; font-size:.82rem; color:white;
+            background:linear-gradient(135deg,#f472b6,#db2777);
+            border:2px solid #222; border-radius:20px; padding:7px 14px;
+            cursor:pointer; box-shadow:2px 2px 0 #222; white-space:nowrap;
+            transition:all .15s;
+        }
+        .reply-send-yara:hover { transform:translateY(-1px); box-shadow:3px 3px 0 #222; }
     </style>
 </head>
 <body class="vent-page">
@@ -135,7 +194,6 @@
         const saveText = document.getElementById('saveText');
         let saveTimer;
 
-        // Local draft autosave (fast, device-local is fine for drafts)
         area.value = localStorage.getItem('ventDraft') || '';
         updateCount();
         if (area.value) { saveDot.className = 'save-dot saved'; }
@@ -172,12 +230,9 @@
             try {
                 const reg = await navigator.serviceWorker.ready;
                 reg.showNotification(title, {
-                    body,
-                    icon: '/foryara/apple-touch-icon.png',
+                    body, icon: '/foryara/apple-touch-icon.png',
                     badge: '/foryara/apple-touch-icon.png',
-                    vibrate: [200, 100, 200],
-                    tag: 'vent-msg',
-                    renotify: true,
+                    vibrate: [200, 100, 200], tag: 'vent-msg', renotify: true,
                 });
             } catch(e) {
                 new Notification(title, { body, icon: '/foryara/apple-touch-icon.png' });
@@ -190,7 +245,8 @@
         };
 
         // ── Firebase ──
-        let _db, _vents = [], _ready = false, _knownIds = new Set();
+        let _db, _vents = [], _ready = false, _knownIds = new Set(), _knownReplyIds = new Set();
+        let _setRef;
 
         (async () => {
             const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
@@ -204,21 +260,31 @@
                 messagingSenderId: "1051054844072",
                 appId: "1:1051054844072:web:1dd1e21e810c93a04d3a9d"
             }));
+            _setRef = (path, val) => set(ref(_db, path), val);
 
             onValue(ref(_db, 'vents'), snap => {
                 const val = snap.val();
                 _vents = val ? Object.values(val).sort((a, b) => b.id - a.id) : [];
 
                 if (!_ready) {
-                    // First load — just record what's already there, don't notify
                     _ready = true;
-                    _vents.forEach(v => _knownIds.add(v.id));
+                    _vents.forEach(v => {
+                        _knownIds.add(v.id);
+                        if (v.replies) Object.keys(v.replies).forEach(r => _knownReplyIds.add(r));
+                    });
                 } else {
-                    // Subsequent updates — notify about brand new messages
                     _vents.forEach(v => {
                         if (!_knownIds.has(v.id)) {
                             _knownIds.add(v.id);
                             notify('New message 💌', v.text.length > 80 ? v.text.slice(0, 80) + '…' : v.text);
+                        }
+                        if (v.replies) {
+                            Object.values(v.replies).forEach(r => {
+                                if (!_knownReplyIds.has(String(r.id))) {
+                                    _knownReplyIds.add(String(r.id));
+                                    notify(`${r.sender === 'saleh' ? 'Saleh 💙' : 'Yara 🌸'} replied`, r.text.length > 80 ? r.text.slice(0, 80) + '…' : r.text);
+                                }
+                            });
                         }
                     });
                 }
@@ -233,7 +299,7 @@
                 btn.disabled = true; btn.textContent = 'Sending…';
                 const id = Date.now();
                 try {
-                    await set(ref(_db, 'vents/' + id), { id, text, timestamp: id, hearted: false });
+                    await _setRef('vents/' + id, { id, text, timestamp: id, hearted: false });
                     area.value = '';
                     localStorage.removeItem('ventDraft');
                     saveDot.className = 'save-dot';
@@ -251,17 +317,34 @@
 
             heartVent = id => {
                 const v = _vents.find(v => v.id === id);
-                if (v) set(ref(_db, 'vents/' + id), { ...v, hearted: !v.hearted });
+                if (v) _setRef('vents/' + id, { ...v, hearted: !v.hearted });
             };
 
             deleteVent = id => {
-                if (confirm('Delete this message?')) set(ref(_db, 'vents/' + id), null);
+                if (confirm('Delete this message?')) _setRef('vents/' + id, null);
             };
+
+            sendReply = async (ventId, sender) => {
+                const ta = document.getElementById('reply-input-' + ventId);
+                const text = ta ? ta.value.trim() : '';
+                if (!text) { if(ta) { ta.style.borderColor='#f87171'; setTimeout(()=>ta.style.borderColor='',1000); } return; }
+                const id = Date.now();
+                await _setRef('vents/' + ventId + '/replies/' + id, { id, text, timestamp: id, sender });
+                ta.value = '';
+            };
+
         })();
 
         function exportVents() {
             if (_vents.length === 0) { alert('No messages to backup yet 🤍'); return; }
-            const text = _vents.map(v => `[${fmtTime(v.timestamp)}]\n${v.text}`).join('\n\n---\n\n');
+            const text = _vents.map(v => {
+                let out = `[${fmtTime(v.timestamp)}]\n${v.text}`;
+                if (v.replies) {
+                    const replies = Object.values(v.replies).sort((a,b) => a.id - b.id);
+                    out += '\n' + replies.map(r => `  ↳ ${r.sender}: ${r.text}`).join('\n');
+                }
+                return out;
+            }).join('\n\n---\n\n');
             const a = document.createElement('a');
             a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
             a.download = 'vent-backup-' + new Date().toISOString().slice(0,10) + '.txt';
@@ -271,6 +354,7 @@
         let sendVent   = () => {};
         let heartVent  = () => {};
         let deleteVent = () => {};
+        let sendReply  = () => {};
 
         function notifBannerHTML() {
             if (!('Notification' in window)) return '';
@@ -280,6 +364,25 @@
                 <span style="font-size:1.4rem;">🔔</span>
                 <span style="flex:1;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;color:#555;">get notified when a message arrives</span>
                 <button onclick="askNotifPerm()" style="font-family:'Fredoka One',cursive;font-size:.85rem;color:white;background:#a78bfa;border:2px solid #7c3aed;border-radius:20px;padding:6px 14px;cursor:pointer;flex-shrink:0;">enable</button>
+            </div>`;
+        }
+
+        function repliesHTML(v) {
+            const replies = v.replies ? Object.values(v.replies).sort((a,b) => a.id - b.id) : [];
+            return `<div class="replies-section">
+                <div class="replies-list">${replies.map(r => `
+                    <div class="reply-bubble ${r.sender}">
+                        <span class="reply-sender">${r.sender === 'saleh' ? 'Saleh 💙' : 'Yara 🌸'}</span>
+                        <div class="reply-text">${escHtml(r.text)}</div>
+                        <span class="reply-time">${fmtTime(r.timestamp)}</span>
+                    </div>`).join('')}
+                </div>
+                <div class="reply-input-row">
+                    <textarea class="reply-textarea" id="reply-input-${v.id}" placeholder="write a reply…" rows="1"
+                        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply(${v.id},'saleh');}"></textarea>
+                    <button class="reply-send-saleh" onclick="sendReply(${v.id},'saleh')">Saleh 💙</button>
+                    <button class="reply-send-yara"  onclick="sendReply(${v.id},'yara')">Yara 🌸</button>
+                </div>
             </div>`;
         }
 
@@ -299,6 +402,7 @@
                         </span>
                     </div>
                     <div class="vent-item-text">${escHtml(v.text)}</div>
+                    ${repliesHTML(v)}
                 </div>`).join('');
         }
 
