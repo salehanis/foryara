@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Things We Agree On</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .promises-page { min-height:100vh; background:url('bg.gif') center/contain no-repeat; background-color:#1a1a2e; display:flex; flex-direction:column; align-items:center; }
+        .promises-header { text-align:center; padding:10px 20px 20px; }
+        .promises-icon { font-size:4.5rem; display:block; animation:bigBounce 2s ease-in-out infinite; margin-bottom:8px; }
+        .promises-title { font-size:2.4rem; color:white; text-shadow:4px 4px 0 rgba(0,0,0,.5),-2px -2px 0 rgba(0,0,0,.28); letter-spacing:2px; }
+        .promises-sub { font-family:'Nunito',sans-serif; font-size:.95rem; color:rgba(255,255,255,.8); font-weight:700; margin-top:6px; }
+        .promises-section { width:100%; max-width:720px; padding:10px 25px 60px; display:flex; flex-direction:column; gap:20px; }
+
+        .promise-box {
+            background:rgba(255,254,242,.6);
+            backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+            border:5px solid #222; border-radius:30px;
+            box-shadow:8px 8px 0 #222; padding:28px 30px;
+            animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+
+        .box-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:16px; border-bottom:3px dashed #ddd; }
+        .box-title { font-family:'Fredoka One',cursive; font-size:1.5rem; color:#333; }
+        .box-count { font-family:'Nunito',sans-serif; font-size:.82rem; font-weight:900; }
+
+        .add-form { display:flex; gap:10px; margin-bottom:18px; }
+        .promise-input {
+            flex:1; border:3px solid #ddd; border-radius:16px;
+            padding:10px 14px; font-family:'Nunito',sans-serif; font-size:.95rem; font-weight:700;
+            color:#333; outline:none; background:rgba(255,255,255,.8); transition:border-color .2s;
+        }
+        .promise-input:focus { border-color:#a78bfa; }
+
+        .add-btn-saleh {
+            font-family:'Fredoka One',cursive; font-size:.95rem; color:white;
+            background:linear-gradient(135deg,#667eea,#764ba2);
+            border:3px solid #222; border-radius:50px; padding:10px 20px;
+            cursor:pointer; box-shadow:3px 3px 0 #222; transition:all .2s; white-space:nowrap;
+        }
+        .add-btn-saleh:hover { transform:translateY(-2px); box-shadow:4px 5px 0 #222; }
+
+        .add-btn-yara {
+            font-family:'Fredoka One',cursive; font-size:.95rem; color:white;
+            background:linear-gradient(135deg,#f472b6,#db2777);
+            border:3px solid #222; border-radius:50px; padding:10px 20px;
+            cursor:pointer; box-shadow:3px 3px 0 #222; transition:all .2s; white-space:nowrap;
+        }
+        .add-btn-yara:hover { transform:translateY(-2px); box-shadow:4px 5px 0 #222; }
+
+        /* Promise items */
+        .promise-item {
+            display:flex; align-items:flex-start; gap:12px;
+            padding:14px 8px; border-bottom:2px solid rgba(200,200,200,.3);
+        }
+        .promise-item:last-child { border-bottom:none; }
+        .promise-item.kept { opacity:.6; }
+
+        .promise-check {
+            width:28px; height:28px; border-radius:50%; border:3px solid #ddd;
+            background:white; cursor:pointer; flex-shrink:0; margin-top:2px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1rem; transition:all .2s; box-shadow:2px 2px 0 #ddd;
+        }
+        .promise-item.saleh-item .promise-check.kept-check { background:#818cf8; border-color:#4338ca; box-shadow:2px 2px 0 #4338ca; color:white; }
+        .promise-item.yara-item  .promise-check.kept-check { background:#f472b6; border-color:#db2777; box-shadow:2px 2px 0 #db2777; color:white; }
+
+        .promise-body { flex:1; }
+        .promise-text {
+            font-family:'Nunito',sans-serif; font-size:.97rem; font-weight:700; color:#444; line-height:1.5;
+        }
+        .promise-item.kept .promise-text { text-decoration:line-through; color:#aaa; }
+        .promise-date { font-family:'Nunito',sans-serif; font-size:.72rem; color:#bbb; font-weight:700; margin-top:3px; }
+
+        .promise-del { background:transparent; border:none; cursor:pointer; font-size:.85rem; color:#ddd; padding:2px 5px; border-radius:6px; transition:color .2s; flex-shrink:0; }
+        .promise-del:hover { color:#ff4444; }
+
+        .empty-state { text-align:center; padding:28px 0; font-family:'Nunito',sans-serif; font-size:.95rem; color:#bbb; font-weight:700; }
+
+        /* Box accent colors */
+        .saleh-box { border-color:#667eea; box-shadow:8px 8px 0 #4338ca; }
+        .yara-box  { border-color:#f472b6; box-shadow:8px 8px 0 #db2777; }
+        .saleh-box .box-title { color:#4338ca; }
+        .yara-box  .box-title { color:#db2777; }
+        .saleh-box .box-count { color:#667eea; }
+        .yara-box  .box-count { color:#f472b6; }
+        .saleh-box { border-top:6px solid #667eea; }
+        .yara-box  { border-top:6px solid #f472b6; }
+    </style>
+</head>
+<body class="promises-page">
+    <div class="rainbow-bar"></div>
+    <nav class="emotion-nav"><a href="index.html" class="back-btn">← Back</a></nav>
+
+    <div class="promises-header">
+        <span class="promises-icon">🤝</span>
+        <h1 class="promises-title">Things We Agree On</h1>
+        <p class="promises-sub">promises we made to each other 💛</p>
+    </div>
+
+    <section class="promises-section">
+
+        <!-- He promised her -->
+        <div class="promise-box saleh-box" style="animation-delay:0s;">
+            <div class="box-top">
+                <span class="box-title">💙 things Saleh promised Yara</span>
+                <span class="box-count" id="salehCount">0 promises</span>
+            </div>
+            <div class="add-form">
+                <input class="promise-input" id="salehInput" type="text" placeholder="he promised…" maxlength="200"
+                    onkeydown="if(event.key==='Enter') addPromise('saleh')">
+                <button class="add-btn-saleh" onclick="addPromise('saleh')">+ add</button>
+            </div>
+            <div id="salehList"><div class="empty-state">no promises yet 💙</div></div>
+        </div>
+
+        <!-- She promised him -->
+        <div class="promise-box yara-box" style="animation-delay:.1s;">
+            <div class="box-top">
+                <span class="box-title">🌸 things Yara promised Saleh</span>
+                <span class="box-count" id="yaraCount">0 promises</span>
+            </div>
+            <div class="add-form">
+                <input class="promise-input" id="yaraInput" type="text" placeholder="she promised…" maxlength="200"
+                    onkeydown="if(event.key==='Enter') addPromise('yara')">
+                <button class="add-btn-yara" onclick="addPromise('yara')">+ add</button>
+            </div>
+            <div id="yaraList"><div class="empty-state">no promises yet 🌸</div></div>
+        </div>
+
+    </section>
+
+    <script>
+        let _db, _saleh = [], _yara = [];
+
+        (async () => {
+            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+            const { getDatabase, ref, set, onValue } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
+            _db = getDatabase(initializeApp({
+                apiKey: "AIzaSyBPMzMNVpGsHhouPGjlSREFgm5ijyhgj6M",
+                authDomain: "foryara-cce24.firebaseapp.com",
+                databaseURL: "https://foryara-cce24-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "foryara-cce24",
+                storageBucket: "foryara-cce24.firebasestorage.app",
+                messagingSenderId: "1051054844072",
+                appId: "1:1051054844072:web:1dd1e21e810c93a04d3a9d"
+            }));
+
+            onValue(ref(_db, 'promises/saleh'), snap => {
+                const val = snap.val();
+                _saleh = val ? Object.values(val).sort((a,b) => b.id - a.id) : [];
+                renderList('saleh');
+            });
+
+            onValue(ref(_db, 'promises/yara'), snap => {
+                const val = snap.val();
+                _yara = val ? Object.values(val).sort((a,b) => b.id - a.id) : [];
+                renderList('yara');
+            });
+
+            addPromise = (who) => {
+                const input = document.getElementById(who + 'Input');
+                const text = input.value.trim();
+                if (!text) { input.style.borderColor='#f87171'; setTimeout(()=>input.style.borderColor='',1000); return; }
+                const id = Date.now();
+                set(ref(_db, 'promises/' + who + '/' + id), { id, text, kept: false, timestamp: id });
+                input.value = '';
+            };
+
+            toggleKept = (who, id) => {
+                const list = who === 'saleh' ? _saleh : _yara;
+                const p = list.find(p => p.id === id);
+                if (p) set(ref(_db, 'promises/' + who + '/' + id), { ...p, kept: !p.kept });
+            };
+
+            deletePromise = (who, id) => {
+                if (confirm('Delete this promise?')) set(ref(_db, 'promises/' + who + '/' + id), null);
+            };
+        })();
+
+        let addPromise    = () => {};
+        let toggleKept    = () => {};
+        let deletePromise = () => {};
+
+        function renderList(who) {
+            const list  = who === 'saleh' ? _saleh : _yara;
+            const el    = document.getElementById(who + 'List');
+            const cnt   = document.getElementById(who + 'Count');
+            const empty = who === 'saleh' ? 'no promises yet 💙' : 'no promises yet 🌸';
+            cnt.textContent = list.length + (list.length === 1 ? ' promise' : ' promises');
+            if (list.length === 0) { el.innerHTML = `<div class="empty-state">${empty}</div>`; return; }
+            el.innerHTML = list.map(p => `
+                <div class="promise-item ${who}-item ${p.kept ? 'kept' : ''}">
+                    <div class="promise-check ${p.kept ? 'kept-check' : ''}" onclick="toggleKept('${who}',${p.id})">${p.kept ? '✓' : ''}</div>
+                    <div class="promise-body">
+                        <div class="promise-text">${escHtml(p.text)}</div>
+                        <div class="promise-date">${fmtDate(p.timestamp)}${p.kept ? ' · kept ✓' : ''}</div>
+                    </div>
+                    <button class="promise-del" onclick="deletePromise('${who}',${p.id})">✕</button>
+                </div>`).join('');
+        }
+
+        function fmtDate(ts) {
+            return new Date(ts).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+        }
+
+        function escHtml(s) {
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        renderList('saleh');
+        renderList('yara');
+    </script>
+</body>
+</html>
