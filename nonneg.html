@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Non Negotiables</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .nn-page { min-height:100vh; background:url('bg.gif') center/contain no-repeat; background-color:#1a1a2e; display:flex; flex-direction:column; align-items:center; }
+        .nn-header { text-align:center; padding:10px 20px 20px; }
+        .nn-icon { font-size:4.5rem; display:block; animation:bigBounce 2s ease-in-out infinite; margin-bottom:8px; }
+        .nn-title { font-size:2.4rem; color:white; text-shadow:4px 4px 0 rgba(0,0,0,.5),-2px -2px 0 rgba(0,0,0,.28); letter-spacing:2px; }
+        .nn-sub { font-family:'Nunito',sans-serif; font-size:.95rem; color:rgba(255,255,255,.8); font-weight:700; margin-top:6px; }
+        .nn-section { width:100%; max-width:720px; padding:10px 25px 60px; display:flex; flex-direction:column; gap:20px; }
+
+        .nn-box {
+            background:rgba(255,254,242,.6);
+            backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+            border:5px solid #222; border-radius:30px;
+            box-shadow:8px 8px 0 #222; padding:28px 30px;
+            animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+        .nn-box.saleh-box { border-top:6px solid #667eea; box-shadow:8px 8px 0 #4338ca; }
+        .nn-box.yara-box  { border-top:6px solid #f472b6; box-shadow:8px 8px 0 #db2777; }
+
+        .box-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:16px; border-bottom:3px dashed #ddd; }
+        .box-title { font-family:'Fredoka One',cursive; font-size:1.5rem; }
+        .saleh-box .box-title { color:#4338ca; }
+        .yara-box  .box-title { color:#db2777; }
+        .box-count { font-family:'Nunito',sans-serif; font-size:.82rem; font-weight:900; }
+        .saleh-box .box-count { color:#667eea; }
+        .yara-box  .box-count { color:#f472b6; }
+
+        /* Add form */
+        .add-form { display:flex; gap:10px; margin-bottom:20px; align-items:flex-start; }
+        .nn-input {
+            flex:1; border:3px solid #ddd; border-radius:16px;
+            padding:10px 14px; font-family:'Nunito',sans-serif; font-size:.95rem; font-weight:700;
+            color:#333; outline:none; background:rgba(255,255,255,.8);
+            transition:border-color .2s; resize:none; min-height:44px;
+            line-height:1.5;
+        }
+        .nn-input:focus { border-color:#a78bfa; }
+        .saleh-box .nn-input:focus { border-color:#667eea; }
+        .yara-box  .nn-input:focus { border-color:#f472b6; }
+
+        .add-btn {
+            font-family:'Fredoka One',cursive; font-size:.95rem; color:white;
+            border:3px solid #222; border-radius:50px; padding:10px 20px;
+            cursor:pointer; box-shadow:3px 3px 0 #222; transition:all .2s; white-space:nowrap;
+            flex-shrink:0;
+        }
+        .add-btn:hover { transform:translateY(-2px); box-shadow:4px 5px 0 #222; }
+        .add-btn:active { transform:translateY(1px); box-shadow:1px 1px 0 #222; }
+        .saleh-box .add-btn { background:linear-gradient(135deg,#667eea,#764ba2); }
+        .yara-box  .add-btn { background:linear-gradient(135deg,#f472b6,#db2777); }
+
+        /* Rule items */
+        .nn-list { display:flex; flex-direction:column; gap:0; }
+
+        .nn-item {
+            display:flex; align-items:flex-start; gap:14px;
+            padding:16px 8px; border-bottom:2px solid rgba(200,200,200,.3);
+            transition:background .2s;
+        }
+        .nn-item:last-child { border-bottom:none; }
+
+        .rule-number {
+            font-family:'Fredoka One',cursive; font-size:1.1rem;
+            width:30px; height:30px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            flex-shrink:0; border:3px solid #222; margin-top:1px;
+            box-shadow:2px 2px 0 #222; color:white;
+        }
+        .saleh-box .rule-number { background:linear-gradient(135deg,#667eea,#764ba2); }
+        .yara-box  .rule-number { background:linear-gradient(135deg,#f472b6,#db2777); }
+
+        .nn-body { flex:1; }
+
+        .nn-text {
+            font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700;
+            color:#333; line-height:1.6; white-space:pre-wrap;
+        }
+
+        .nn-date { font-family:'Nunito',sans-serif; font-size:.72rem; color:#bbb; font-weight:700; margin-top:4px; }
+
+        .nn-del {
+            background:transparent; border:none; cursor:pointer;
+            font-size:.85rem; color:#ddd; padding:2px 5px;
+            border-radius:6px; transition:color .2s; flex-shrink:0; margin-top:4px;
+        }
+        .nn-del:hover { color:#ff4444; }
+
+        .empty-state { text-align:center; padding:28px 0; font-family:'Nunito',sans-serif; font-size:.95rem; color:#bbb; font-weight:700; }
+    </style>
+</head>
+<body class="nn-page">
+    <div class="rainbow-bar"></div>
+    <nav class="emotion-nav"><a href="index.html" class="back-btn">← Back</a></nav>
+
+    <div class="nn-header">
+        <span class="nn-icon">📜</span>
+        <h1 class="nn-title">Non Negotiables</h1>
+        <p class="nn-sub">the rules we live by 🤍</p>
+    </div>
+
+    <section class="nn-section">
+
+        <!-- Saleh's non negotiables -->
+        <div class="nn-box saleh-box">
+            <div class="box-top">
+                <span class="box-title">💙 Saleh's non negotiables</span>
+                <span class="box-count" id="salehCount">0 rules</span>
+            </div>
+            <div class="add-form">
+                <textarea class="nn-input" id="salehInput" placeholder="write a rule…" rows="2"
+                    onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addRule('saleh');}"></textarea>
+                <button class="add-btn" onclick="addRule('saleh')">+ add rule</button>
+            </div>
+            <div class="nn-list" id="salehList"><div class="empty-state">no rules written yet 💙</div></div>
+        </div>
+
+        <!-- Yara's non negotiables -->
+        <div class="nn-box yara-box" style="animation-delay:.1s;">
+            <div class="box-top">
+                <span class="box-title">🌸 Yara's non negotiables</span>
+                <span class="box-count" id="yaraCount">0 rules</span>
+            </div>
+            <div class="add-form">
+                <textarea class="nn-input" id="yaraInput" placeholder="write a rule…" rows="2"
+                    onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addRule('yara');}"></textarea>
+                <button class="add-btn" onclick="addRule('yara')">+ add rule</button>
+            </div>
+            <div class="nn-list" id="yaraList"><div class="empty-state">no rules written yet 🌸</div></div>
+        </div>
+
+    </section>
+
+    <script>
+        let _db, _saleh = [], _yara = [];
+
+        (async () => {
+            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+            const { getDatabase, ref, set, onValue } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
+            _db = getDatabase(initializeApp({
+                apiKey: "AIzaSyBPMzMNVpGsHhouPGjlSREFgm5ijyhgj6M",
+                authDomain: "foryara-cce24.firebaseapp.com",
+                databaseURL: "https://foryara-cce24-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "foryara-cce24",
+                storageBucket: "foryara-cce24.firebasestorage.app",
+                messagingSenderId: "1051054844072",
+                appId: "1:1051054844072:web:1dd1e21e810c93a04d3a9d"
+            }));
+
+            onValue(ref(_db, 'nonneg/saleh'), snap => {
+                const val = snap.val();
+                _saleh = val ? Object.values(val).sort((a,b) => a.id - b.id) : [];
+                renderList('saleh');
+            });
+
+            onValue(ref(_db, 'nonneg/yara'), snap => {
+                const val = snap.val();
+                _yara = val ? Object.values(val).sort((a,b) => a.id - b.id) : [];
+                renderList('yara');
+            });
+
+            addRule = (who) => {
+                const input = document.getElementById(who + 'Input');
+                const text = input.value.trim();
+                if (!text) { input.style.borderColor='#f87171'; setTimeout(()=>input.style.borderColor='',1000); return; }
+                const id = Date.now();
+                set(ref(_db, 'nonneg/' + who + '/' + id), { id, text, timestamp: id });
+                input.value = '';
+                input.style.height = 'auto';
+            };
+
+            deleteRule = (who, id) => {
+                if (confirm('Delete this rule?')) set(ref(_db, 'nonneg/' + who + '/' + id), null);
+            };
+        })();
+
+        let addRule    = () => {};
+        let deleteRule = () => {};
+
+        // Auto-grow textarea
+        document.querySelectorAll('.nn-input').forEach(ta => {
+            ta.addEventListener('input', () => {
+                ta.style.height = 'auto';
+                ta.style.height = ta.scrollHeight + 'px';
+            });
+        });
+
+        function renderList(who) {
+            const list = who === 'saleh' ? _saleh : _yara;
+            const el   = document.getElementById(who + 'List');
+            const cnt  = document.getElementById(who + 'Count');
+            const empty = who === 'saleh' ? 'no rules written yet 💙' : 'no rules written yet 🌸';
+            cnt.textContent = list.length + (list.length === 1 ? ' rule' : ' rules');
+            if (list.length === 0) { el.innerHTML = `<div class="empty-state">${empty}</div>`; return; }
+            el.innerHTML = list.map((r, i) => `
+                <div class="nn-item">
+                    <div class="rule-number">${i + 1}</div>
+                    <div class="nn-body">
+                        <div class="nn-text">${escHtml(r.text)}</div>
+                        <div class="nn-date">${fmtDate(r.timestamp)}</div>
+                    </div>
+                    <button class="nn-del" onclick="deleteRule('${who}',${r.id})">✕</button>
+                </div>`).join('');
+        }
+
+        function fmtDate(ts) {
+            return new Date(ts).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+        }
+
+        function escHtml(s) {
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        renderList('saleh');
+        renderList('yara');
+    </script>
+</body>
+</html>
