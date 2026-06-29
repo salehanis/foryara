@@ -74,6 +74,19 @@
         .reply-submit-btn:disabled { opacity:.6; cursor:not-allowed; transform:none !important; }
 
         .history-label { font-family:'Fredoka One',cursive; font-size:.95rem; color:rgba(255,255,255,.55); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+
+        /* Cycle tracker */
+        .cycle-card { background:rgba(255,254,242,.65); backdrop-filter:blur(8px); border:5px solid #db2777; border-radius:30px; box-shadow:8px 8px 0 #9d174d; padding:26px 28px; animation:notePop .4s cubic-bezier(.175,.885,.32,1.275) .05s both; }
+        .cycle-title { font-family:'Fredoka One',cursive; font-size:1.4rem; color:#db2777; margin-bottom:16px; padding-bottom:12px; border-bottom:3px dashed #f9a8d4; display:flex; align-items:center; gap:8px; }
+        .cycle-date-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:18px; }
+        .cycle-date-input { border:3px solid #f9a8d4; border-radius:14px; padding:9px 14px; font-family:'Fredoka One',cursive; font-size:1rem; color:#333; outline:none; background:rgba(255,255,255,.8); transition:border-color .2s; flex:1; min-width:140px; }
+        .cycle-date-input:focus { border-color:#db2777; }
+        .cycle-save-btn { font-family:'Fredoka One',cursive; font-size:.95rem; color:white; background:linear-gradient(135deg,#f9a8d4,#ec4899); border:3px solid #222; border-radius:50px; padding:10px 22px; cursor:pointer; box-shadow:3px 3px 0 #222; transition:all .2s; white-space:nowrap; }
+        .cycle-save-btn:hover { transform:translateY(-2px); box-shadow:4px 4px 0 #222; }
+        .cycle-stats { display:flex; gap:14px; flex-wrap:wrap; }
+        .cycle-stat { flex:1; min-width:120px; background:rgba(249,168,212,.15); border:2px solid #f9a8d4; border-radius:18px; padding:14px 16px; text-align:center; }
+        .cycle-stat-num { font-family:'Fredoka One',cursive; font-size:2rem; color:#db2777; display:block; }
+        .cycle-stat-label { font-family:'Nunito',sans-serif; font-size:.78rem; font-weight:900; color:#aaa; text-transform:uppercase; letter-spacing:1px; margin-top:2px; display:block; }
         .h-item { background:rgba(255,254,242,.45); backdrop-filter:blur(6px); border:3px solid rgba(255,255,255,.2); border-radius:18px; padding:14px 18px; cursor:pointer; transition:background .15s; }
         .h-item:hover { background:rgba(255,254,242,.6); }
         .h-item-top { display:flex; justify-content:space-between; align-items:center; }
@@ -107,6 +120,21 @@
     </div>
 
     <section class="period-section">
+
+        <!-- Cycle tracker -->
+        <div class="cycle-card">
+            <div class="cycle-title">🩸 cycle tracker</div>
+            <div class="cycle-date-row">
+                <input type="date" class="cycle-date-input" id="lastPeriodInput">
+                <button class="cycle-save-btn" onclick="saveLastPeriod()">save 🌸</button>
+            </div>
+            <div class="cycle-stats" id="cycleStats">
+                <div class="cycle-stat"><span class="cycle-stat-num" id="daysSince">—</span><span class="cycle-stat-label">days since last period</span></div>
+                <div class="cycle-stat"><span class="cycle-stat-num" id="daysUntil">—</span><span class="cycle-stat-label">days until next (est.)</span></div>
+                <div class="cycle-stat"><span class="cycle-stat-num" id="nextDate">—</span><span class="cycle-stat-label">expected next period</span></div>
+            </div>
+        </div>
+
         <div id="mainContent">
             <div class="p-card" style="text-align:center;padding:50px 30px;">
                 <span style="font-size:3rem">🌸</span>
@@ -385,6 +413,36 @@
                 btn.style.background = 'linear-gradient(135deg,#f87171,#dc2626)';
                 console.error('submitReply failed:', e);
             }
+        };
+
+        // ── cycle tracker ──
+        function updateCycleDisplay(dateStr) {
+            if (!dateStr) return;
+            document.getElementById('lastPeriodInput').value = dateStr;
+            const last     = new Date(dateStr);
+            const today    = new Date();
+            const daysSince = Math.floor((today - last) / (1000*60*60*24));
+            const cycleLen  = 28;
+            const daysUntil = Math.max(0, cycleLen - daysSince);
+            const nextDate  = new Date(last);
+            nextDate.setDate(nextDate.getDate() + cycleLen);
+            const nextFmt   = nextDate.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+            document.getElementById('daysSince').textContent = daysSince;
+            document.getElementById('daysUntil').textContent = daysUntil;
+            document.getElementById('nextDate').textContent  = nextFmt;
+        }
+
+        // Load saved date from Firebase
+        onValue(ref(db, 'cycleLastPeriod'), snap => {
+            const val = snap.val();
+            if (val) updateCycleDisplay(val);
+        });
+
+        window.saveLastPeriod = async () => {
+            const val = document.getElementById('lastPeriodInput').value;
+            if (!val) return;
+            await set(ref(db, 'cycleLastPeriod'), val);
+            updateCycleDisplay(val);
         };
 
         // ── live listener ──
