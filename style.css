@@ -490,3 +490,171 @@ body {
     .note-content      { font-size: 1.05rem; }
     .note-section      { padding: 42px 18px 40px; }
 }
+
+
+/* ==============================
+   BOTTOM TAB NAVIGATION
+   ============================== */
+
+body {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(255, 254, 242, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 3px solid #1a1a1a;
+    box-shadow: 0 -4px 0 #1a1a1a;
+    display: flex;
+    align-items: stretch;
+    z-index: 9999;
+}
+
+.bnav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    text-decoration: none;
+    color: #bbb;
+    transition: color 0.18s, transform 0.18s;
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+}
+
+.bnav-item:hover { color: #7c3aed; }
+
+.bnav-active {
+    color: #7c3aed;
+}
+
+.bnav-active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 3px;
+    background: linear-gradient(90deg, #a78bfa, #7c3aed);
+    border-radius: 0 0 4px 4px;
+}
+
+.bnav-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+    display: block;
+    transition: transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bnav-active .bnav-icon {
+    transform: translateY(-3px) scale(1.15);
+}
+
+.bnav-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.6rem;
+    letter-spacing: 0.3px;
+}
+
+
+/* ==============================
+   SKELETON LOADING SHIMMER
+   ============================== */
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 12px;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.skeleton * { visibility: hidden; }
+
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-line {
+    height: 1em;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #e8e8e8 25%, #d8d8d8 50%, #e8e8e8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeleton-line:last-child { margin-bottom: 0; width: 70%; }
+
+
+/* ==============================
+   ACCESSIBILITY & FOCUS
+   ============================== */
+
+:focus-visible {
+    outline: 3px solid #a78bfa;
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+/* Ensure interactive elements meet minimum 44px tap target */
+button,
+.back-btn,
+.emotion-card,
+.bnav-item {
+    min-height: 44px;
+}
+
+/* Remove outline on mouse click, keep it for keyboard */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.back-btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Delete / icon-only buttons — bigger hit area without changing visual size */
+.tl-delete-btn,
+.custom-del {
+    min-width: 36px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ==============================
+   SHARED PAGE UTILITIES
+   ============================== */
+
+/* Animated pulse for loading text */
+.connecting {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: #ccc;
+    font-weight: 700;
+    text-align: center;
+    padding: 20px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}

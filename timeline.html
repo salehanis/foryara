@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -248,7 +248,7 @@
                     <div class="tl-card">
                         <div class="tl-card-top">
                             <span class="tl-card-date">${formatDate(m.date)} · ${catLabels[m.cat] || 'other'}</span>
-                            <button class="tl-delete-btn" onclick="deleteMoment(${m.id})">✕</button>
+                            <button class="tl-delete-btn" onclick="deleteMoment(${m.id})" aria-label="Delete moment">✕</button>
                         </div>
                         <div class="tl-card-title">${m.title}</div>
                         ${m.note ? `<div class="tl-card-note">${m.note}</div>` : ''}
@@ -259,5 +259,6 @@
 
         render();
     </script>
+    <script src="nav.js"></script>
 </body>
 </html>
