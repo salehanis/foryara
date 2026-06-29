@@ -217,12 +217,14 @@
         }
 
         function clearDraft() {
-            if (area.value && !confirm('Clear your draft?')) return;
-            area.value = '';
-            if (_setRef) _setRef('ventDraft', null);
-            saveDot.className = 'save-dot';
-            saveText.textContent = 'cleared';
-            updateCount();
+            function doClear() {
+                area.value = '';
+                if (_setRef) _setRef('ventDraft', null);
+                saveDot.className = 'save-dot';
+                saveText.textContent = 'cleared';
+                updateCount();
+            }
+            if (area.value) { showConfirm('Clear your draft?', doClear, 'yes, clear'); } else { doClear(); }
         }
 
         // ── Notifications ──
@@ -333,7 +335,7 @@
             };
 
             deleteVent = id => {
-                if (confirm('Delete this message?')) _setRef('vents/' + id, null);
+                showConfirm('Delete this message?', function() { _setRef('vents/' + id, null); });
             };
 
             sendReply = async (ventId, sender) => {
@@ -348,11 +350,11 @@
         })();
 
         async function exportVents() {
-            if (_vents.length === 0) { alert('No messages to backup yet 🤍'); return; }
+            if (_vents.length === 0) { toast('Nothing to back up yet', 'info'); return; }
             const key = 'backups/vents/' + Date.now();
             const data = { savedAt: new Date().toISOString(), messages: _vents };
             await _setRef(key, data);
-            alert('Backup saved to cloud ✓ you can access it from any device 🤍');
+            toast('Backup saved to cloud ✓', 'success');
         }
 
         let sendVent   = () => {};
@@ -420,6 +422,7 @@
 
         renderInbox();
     </script>
+    <script src="toast.js"></script>
     <script src="nav.js"></script>
 </body>
 </html>

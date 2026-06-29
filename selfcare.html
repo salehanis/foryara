@@ -199,6 +199,7 @@
         }
 
         window.toggle = key => {
+            if (navigator.vibrate) navigator.vibrate(10);
             _data[key] = !_data[key];
             set(ref(db, 'selfcare/' + todayKey()), _data);
         };
@@ -243,11 +244,12 @@
         window.resetChecks = () => set(ref(db, 'selfcare/' + todayKey()), {});
 
         window.exportSelfcare = async () => {
-            if (!_data || Object.keys(_data).length === 0) { alert('No selfcare data to backup yet 🤍'); return; }
+            if (!_data || Object.keys(_data).length === 0) { toast('Nothing to back up yet', 'info'); return; }
             await set(ref(db, 'backups/selfcare/' + Date.now()), { savedAt: new Date().toISOString(), date: todayKey(), data: _data });
-            alert('Backup saved to cloud ✓ accessible from any device 🤍');
+            toast('Backup saved to cloud ✓', 'success');
         };
     </script>
+    <script src="toast.js"></script>
     <script src="nav.js"></script>
 </body>
 </html>

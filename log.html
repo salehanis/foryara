@@ -348,8 +348,7 @@
             };
 
             resetAll = () => {
-                if (confirm('Reset all emotion logs?'))
-                    set(ref(db, 'emotionLog'), { counts: {}, lastTime: null, lastLabel: null });
+                showConfirm('Reset all emotion logs?', function() { set(ref(db, 'emotionLog'), { counts: {}, lastTime: null, lastLabel: null }); }, 'yes, reset');
             };
         })();
 
@@ -357,9 +356,9 @@
         let resetAll   = () => {};
 
         async function exportLog() {
-            if (!_counts || Object.keys(_counts).length === 0) { alert('No emotion logs to backup yet 🤍'); return; }
+            if (!_counts || Object.keys(_counts).length === 0) { toast('Nothing to back up yet', 'info'); return; }
             await set(ref(db, 'backups/emotionLog/' + Date.now()), { savedAt: new Date().toISOString(), counts: _counts });
-            alert('Backup saved to cloud ✓ accessible from any device 🤍');
+            toast('Backup saved to cloud ✓', 'success');
         }
 
         function getTotal(data) { return Object.values(data).reduce((a,b) => a+b, 0); }
@@ -389,6 +388,7 @@
         render();
     </script>
 
+    <script src="toast.js"></script>
     <script src="nav.js"></script>
 </body>
 </html>

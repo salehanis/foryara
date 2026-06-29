@@ -231,9 +231,9 @@
         let deleteMoment = () => {};
 
         async function exportTimeline() {
-            if (!_moments || _moments.length === 0) { alert('No timeline moments to backup yet 🤍'); return; }
+            if (!_moments || _moments.length === 0) { toast('Nothing to back up yet', 'info'); return; }
             await set(ref(_db, 'backups/timeline/' + Date.now()), { savedAt: new Date().toISOString(), moments: _moments });
-            alert('Backup saved to cloud ✓ accessible from any device 🤍');
+            toast('Backup saved to cloud ✓', 'success');
         }
 
         function render() {
@@ -259,6 +259,7 @@
 
         render();
     </script>
+    <script src="toast.js"></script>
     <script src="nav.js"></script>
 </body>
 </html>

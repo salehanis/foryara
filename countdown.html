@@ -171,11 +171,12 @@
         window.exportCountdown = async () => {
             const met  = document.getElementById('metInput')      ? document.getElementById('metInput').value      : '';
             const next = document.getElementById('nextMeetInput') ? document.getElementById('nextMeetInput').value : '';
-            if (!met && !next) { alert('No countdown data to backup yet 🤍'); return; }
+            if (!met && !next) { toast('Nothing to back up yet', 'info'); return; }
             await set(ref(db, 'backups/countdown/' + Date.now()), { savedAt: new Date().toISOString(), metDate: met || null, nextMeetDate: next || null });
-            alert('Backup saved to cloud ✓ accessible from any device 🤍');
+            toast('Backup saved to cloud ✓', 'success');
         };
     </script>
+    <script src="toast.js"></script>
     <script src="nav.js"></script>
 </body>
 </html>

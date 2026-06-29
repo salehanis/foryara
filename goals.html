@@ -227,11 +227,11 @@
             };
 
             deleteGoal = (id) => {
-                if (confirm('Delete this goal?')) set(ref(_db, 'goals/' + id), null);
+                showConfirm('Delete this goal?', function() { set(ref(_db, 'goals/' + id), null); });
             };
 
             deleteAch = (id) => {
-                if (confirm('Delete this achievement?')) set(ref(_db, 'achievements/' + id), null);
+                showConfirm('Delete this achievement?', function() { set(ref(_db, 'achievements/' + id), null); });
             };
         })();
 
@@ -293,6 +293,7 @@
         renderGoals();
         renderAchievements();
     </script>
+    <script src="toast.js"></script>
     <script src="nav.js"></script>
 </body>
 </html>

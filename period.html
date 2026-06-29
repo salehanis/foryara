@@ -467,13 +467,14 @@
         });
 
         window.exportPeriod = async () => {
-            if (!_prevData || Object.keys(_prevData).length === 0) { alert('No period logs to backup yet 🤍'); return; }
+            if (!_prevData || Object.keys(_prevData).length === 0) { toast('Nothing to back up yet', 'info'); return; }
             await set(ref(db, 'backups/period/' + Date.now()), { savedAt: new Date().toISOString(), logs: _prevData });
-            alert('Backup saved to cloud ✓ accessible from any device 🤍');
+            toast('Backup saved to cloud ✓', 'success');
         };
 
         } // end else
     </script>
+    <script src="toast.js"></script>
     <script src="nav.js"></script>
 </body>
 </html>

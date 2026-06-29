@@ -176,7 +176,7 @@
             };
 
             deletePromise = (who, id) => {
-                if (confirm('Delete this promise?')) set(ref(_db, 'promises/' + who + '/' + id), null);
+                showConfirm('Delete this promise?', function() { set(ref(_db, 'promises/' + who + '/' + id), null); });
             };
         })();
 
@@ -213,6 +213,7 @@
         renderList('saleh');
         renderList('yara');
     </script>
+    <script src="toast.js"></script>
     <script src="nav.js"></script>
 </body>
 </html>

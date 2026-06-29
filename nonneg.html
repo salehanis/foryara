@@ -176,7 +176,7 @@
             };
 
             deleteRule = (who, id) => {
-                if (confirm('Delete this rule?')) set(ref(_db, 'nonneg/' + who + '/' + id), null);
+                showConfirm('Delete this rule?', function() { set(ref(_db, 'nonneg/' + who + '/' + id), null); });
             };
         })();
 
@@ -220,6 +220,7 @@
         renderList('saleh');
         renderList('yara');
     </script>
+    <script src="toast.js"></script>
     <script src="nav.js"></script>
 </body>
 </html>
