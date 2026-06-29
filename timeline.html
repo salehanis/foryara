@@ -230,14 +230,10 @@
         let addMoment    = () => {};
         let deleteMoment = () => {};
 
-        function exportTimeline() {
+        async function exportTimeline() {
             if (!_moments || _moments.length === 0) { alert('No timeline moments to backup yet 🤍'); return; }
-            const text = `Our Story Backup — ${new Date().toLocaleDateString()}\n\n` +
-                _moments.map(m => `${m.date} ${m.emoji || ''} ${m.title}${m.note ? '\n  ' + m.note : ''}`).join('\n\n');
-            const a = document.createElement('a');
-            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-            a.download = 'timeline-backup-' + new Date().toISOString().slice(0,10) + '.txt';
-            a.click();
+            await set(ref(_db, 'backups/timeline/' + Date.now()), { savedAt: new Date().toISOString(), moments: _moments });
+            alert('Backup saved to cloud ✓ accessible from any device 🤍');
         }
 
         function render() {

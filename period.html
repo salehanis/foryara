@@ -466,17 +466,10 @@
             render(data);
         });
 
-        window.exportPeriod = () => {
+        window.exportPeriod = async () => {
             if (!_prevData || Object.keys(_prevData).length === 0) { alert('No period logs to backup yet 🤍'); return; }
-            const lines = Object.entries(_prevData).map(([month, d]) => {
-                const symptoms = d.symptoms ? Object.keys(d.symptoms).filter(k => d.symptoms[k]).join(', ') : '—';
-                return `${month}\n  mood: ${d.mood || '—'}\n  symptoms: ${symptoms}${d.note ? '\n  note: ' + d.note : ''}${d.reply ? '\n  reply: ' + d.reply : ''}`;
-            }).join('\n\n');
-            const text = `Period Log Backup — ${new Date().toLocaleDateString()}\n\n${lines}`;
-            const a = document.createElement('a');
-            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-            a.download = 'period-backup-' + new Date().toISOString().slice(0,10) + '.txt';
-            a.click();
+            await set(ref(db, 'backups/period/' + Date.now()), { savedAt: new Date().toISOString(), logs: _prevData });
+            alert('Backup saved to cloud ✓ accessible from any device 🤍');
         };
 
         } // end else

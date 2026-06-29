@@ -168,15 +168,12 @@
                 .catch(err => { console.error(err); flashBtn('saveNextBtn', false); });
         };
 
-        window.exportCountdown = () => {
-            const met = document.getElementById('metInput') ? document.getElementById('metInput').value : '';
+        window.exportCountdown = async () => {
+            const met  = document.getElementById('metInput')      ? document.getElementById('metInput').value      : '';
             const next = document.getElementById('nextMeetInput') ? document.getElementById('nextMeetInput').value : '';
             if (!met && !next) { alert('No countdown data to backup yet 🤍'); return; }
-            const text = `Countdown Backup — ${new Date().toLocaleDateString()}\n\nWe met: ${met || '—'}\nNext meet: ${next || '—'}`;
-            const a = document.createElement('a');
-            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-            a.download = 'countdown-backup-' + new Date().toISOString().slice(0,10) + '.txt';
-            a.click();
+            await set(ref(db, 'backups/countdown/' + Date.now()), { savedAt: new Date().toISOString(), metDate: met || null, nextMeetDate: next || null });
+            alert('Backup saved to cloud ✓ accessible from any device 🤍');
         };
     </script>
 </body>

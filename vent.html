@@ -194,21 +194,22 @@
         const saveText = document.getElementById('saveText');
         let saveTimer;
 
-        area.value = localStorage.getItem('ventDraft') || '';
         updateCount();
-        if (area.value) { saveDot.className = 'save-dot saved'; }
 
         area.addEventListener('input', () => {
             updateCount();
             saveDot.className = 'save-dot';
             saveText.textContent = 'saving…';
             clearTimeout(saveTimer);
-            saveTimer = setTimeout(() => {
-                localStorage.setItem('ventDraft', area.value);
-                saveDot.className = 'save-dot saved';
-                saveText.textContent = 'draft saved';
-            }, 700);
+            saveTimer = setTimeout(() => saveDraftToFirebase(), 700);
         });
+
+        function saveDraftToFirebase() {
+            if (!_setRef) return;
+            _setRef('ventDraft', area.value || null);
+            saveDot.className = 'save-dot saved';
+            saveText.textContent = 'draft saved';
+        }
 
         function updateCount() {
             const w = area.value.trim() === '' ? 0 : area.value.trim().split(/\s+/).length;
@@ -218,7 +219,7 @@
         function clearDraft() {
             if (area.value && !confirm('Clear your draft?')) return;
             area.value = '';
-            localStorage.removeItem('ventDraft');
+            if (_setRef) _setRef('ventDraft', null);
             saveDot.className = 'save-dot';
             saveText.textContent = 'cleared';
             updateCount();
@@ -261,6 +262,17 @@
                 appId: "1:1051054844072:web:1dd1e21e810c93a04d3a9d"
             }));
             _setRef = (path, val) => set(ref(_db, path), val);
+
+            // Load draft from Firebase
+            onValue(ref(_db, 'ventDraft'), snap => {
+                const draft = snap.val();
+                if (draft && !area.value) {
+                    area.value = draft;
+                    updateCount();
+                    saveDot.className = 'save-dot saved';
+                    saveText.textContent = 'draft saved';
+                }
+            }, { onlyOnce: true });
 
             onValue(ref(_db, 'vents'), snap => {
                 const val = snap.val();
@@ -335,20 +347,12 @@
 
         })();
 
-        function exportVents() {
+        async function exportVents() {
             if (_vents.length === 0) { alert('No messages to backup yet 🤍'); return; }
-            const text = _vents.map(v => {
-                let out = `[${fmtTime(v.timestamp)}]\n${v.text}`;
-                if (v.replies) {
-                    const replies = Object.values(v.replies).sort((a,b) => a.id - b.id);
-                    out += '\n' + replies.map(r => `  ↳ ${r.sender}: ${r.text}`).join('\n');
-                }
-                return out;
-            }).join('\n\n---\n\n');
-            const a = document.createElement('a');
-            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-            a.download = 'vent-backup-' + new Date().toISOString().slice(0,10) + '.txt';
-            a.click();
+            const key = 'backups/vents/' + Date.now();
+            const data = { savedAt: new Date().toISOString(), messages: _vents };
+            await _setRef(key, data);
+            alert('Backup saved to cloud ✓ you can access it from any device 🤍');
         }
 
         let sendVent   = () => {};

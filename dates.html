@@ -257,14 +257,10 @@
         let toggleDone = () => {};
         let deleteIdea = () => {};
 
-        function exportDates() {
+        async function exportDates() {
             if (!_ideas || _ideas.length === 0) { alert('No date ideas to backup yet 🤍'); return; }
-            const text = `Date Ideas Backup — ${new Date().toLocaleDateString()}\n\n` +
-                _ideas.map(d => `${d.emoji || ''} [${d.who}] ${d.text}${d.done ? ' ✓' : ''}`).join('\n');
-            const a = document.createElement('a');
-            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-            a.download = 'date-ideas-backup-' + new Date().toISOString().slice(0,10) + '.txt';
-            a.click();
+            await set(ref(_db, 'backups/dateIdeas/' + Date.now()), { savedAt: new Date().toISOString(), ideas: _ideas });
+            alert('Backup saved to cloud ✓ accessible from any device 🤍');
         }
 
         function render() {

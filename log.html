@@ -356,14 +356,10 @@
         let logEmotion = () => {};
         let resetAll   = () => {};
 
-        function exportLog() {
+        async function exportLog() {
             if (!_counts || Object.keys(_counts).length === 0) { alert('No emotion logs to backup yet 🤍'); return; }
-            const lines = Object.entries(_counts).map(([k,v]) => `${k}: ${v} times`).join('\n');
-            const text = `Emotion Log Backup — ${new Date().toLocaleDateString()}\n\n${lines}`;
-            const a = document.createElement('a');
-            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-            a.download = 'emotion-log-backup-' + new Date().toISOString().slice(0,10) + '.txt';
-            a.click();
+            await set(ref(db, 'backups/emotionLog/' + Date.now()), { savedAt: new Date().toISOString(), counts: _counts });
+            alert('Backup saved to cloud ✓ accessible from any device 🤍');
         }
 
         function getTotal(data) { return Object.values(data).reduce((a,b) => a+b, 0); }
